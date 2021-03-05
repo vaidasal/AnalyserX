@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+{% extends "logAnalyser.html" %}
+{% block log_analyser %}
+
+
+<div class="container mt-3">
+
+  <div class="card">
+    <div class="card-header" style="background-color: #272727;">
+      <ul class="nav nav-tabs card-header-tabs">
+        <li class="nav-item">
+          <a class="nav-link" id="analyser2DButton" href="#" style="background-color: #363636; border-color: #363636;">2D</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="analyser3DButton" href="#" style="border-color: transparent">3D</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="analyserSettings" href="#" style="border-color: transparent">Settings</a>
+        </li>
+      </ul>
+    </div>
+    <div class="card-body text-white" style="background-color: #363636;">
+
+      <!-- ANALYSER 2D -->
+      <div class="analyser2D">
+        <div class="row">
+          <div class="col-6">
+
+            <ul class="list-group">
+              <li class="list-group-item bg-transparent" style="border-radius: 0px; border-color: #272727; padding: 0px;">
+                <div class="card">
+                  <table class="table table-borderless table-dark bg-transparent" id="tableLeft">
+                    <thead>
+                      <tr>
+                        <th scope="col" style="display:none">id</th>
+                        <th scope="col" colspan="2">
+                          <div class="row">
+                            <div class="col-6">
+                              <h6>Left Axis</h6>
+                            </div>
+                            <div class="col-6">
+                              <form action="" method="post" class="form-inline  float-right">
+                                <div class="input-group input-group-sm" style="width: 140px;">
+                                  <input type="text" class="form-control" placeholder="From" id="rangeFromLeft">
+                                  <input type="text" class="form-control" placeholder="To" id="rangeToLeft">
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </div>
+              </li>
+              <li class="list-group-item bg-transparent" style="border-radius: 0px; border-color: transparent; padding: 0px;">
+                <!-- ADD PARAM -->
+                <form action="" method="post">
+                  <div class="input-group mb-3">
+
+                    <div class="input-group-prepend">
+                      <select class="custom-select" id="inputParameterSetLeft" data-topics="{{ topics }}" name="inputParameterSet" style="background-color: #272727;">
+                        {% for s in set %}
+                          <option >{{s}}</option>
+                        {% endfor %}
+                      </select>
+
+                      <button class="btn btn-outline-primary dropdown-toggle topics" for="inputGroupSelect01" type="button" id="dropdownMenuButtonLeft" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Topics</button>
+                      <div class="dropdown-menu pre-scrollable" id="inputTopicLeft" data-params="{{ topics }}" aria-labelledby="dropdownMenuButton">
+                        {% for key in topics[set[0]].keys() %}
+                          <a type="button" class="dropdown-item topicSelectedLeft" data-name="{{ key }}" data-set="{{ set[0] }}" >{{ key }}</a>
+                        {% endfor %}
+                      </div>
+                    </div>
+                    <select class="custom-select" id="inputParameterSelectLeft" name="inputParameterSelect" style="background-color: #272727;">
+                      <option selected></option>
+                    </select>
+                    <div class="input-group-append">
+                      <button class="btn btn-outline-primary topics addLeftButton" style="color: #0275d8;" type="button"><i class="fa fa-plus"></i></button>
+                    </div>
+                  </div>
+                </form>
+              </li>
+            </ul>
+          </div>
+
+          <div class="col-6">
+    <!-- RIGHT SIDE -->
+    <ul class="list-group">
+      <li class="list-group-item bg-transparent" style="border-radius: 0px; border-color: #272727; padding: 0px;">
+            <div class="card">
+              <table class="table table-borderless table-dark bg-transparent" id="tableRight">
+                <thead>
+                  <tr>
+                    <th scope="col" style="display:none">id</th>
+                    <th scope="col" colspan="2">
+                      <div class="row">
+                        <div class="col-6">
+                          <h6>Right Axis</h6>
+                        </div>
+                        <div class="col-6">
+                          <form action="" method="post" class="float-right">
+                            <div class="input-group input-group-sm" style="width: 140px;">
+                              <input type="text" class="form-control" placeholder="From" id="rangeFromRight">
+                              <input type="text" class="form-control" placeholder="To" id="rangeToRight">
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </li>
+
+      <!-- ADD PARAM -->
+      <li class="list-group-item bg-transparent" style="border-radius: 0px; border-color: transparent; padding: 0px;">
+            <form action="" method="post">
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <select class="custom-select" id="inputParameterSetRight" data-topics="{{ topics }}" name="inputParameterSet" style="background-color: #272727;">
+                    {% for s in set %}
+                      <option >{{s}}</option>
+                    {% endfor %}
+                  </select>
+
+                  <button class="btn btn-outline-primary dropdown-toggle topics" for="inputGroupSelect01" type="button" id="dropdownMenuButtonRight" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Topics</button>
+                  <div class="dropdown-menu pre-scrollable" id="inputTopicRight" data-params="{{ topics }}" aria-labelledby="dropdownMenuButton">
+                    {% for key in topics[set[0]].keys() %}
+                      <a type="button" class="dropdown-item topicSelectedRight" data-name="{{ key }}" data-set="{{ set[0] }}" >{{ key }}</a>
+                    {% endfor %}
+                  </div>
+                </div>
+                <select class="custom-select" id="inputParameterSelectRight" name="inputParameterSelect" style="background-color: #272727;">
+                  <option selected></option>
+                </select>
+                <div class="input-group-append">
+                  <button class="btn btn-outline-primary topics addRightButton" style="color: #0275d8;" type="button"><i class="fa fa-plus"></i></button>
+                </div>
+              </div>
+            </form>
+          </li>
+        </ul>
+          </div>
+        </div>
+        <button class="btn btn-outline-success btn-block" type="button" name="button" id="sendData" style="border-color: #0275d8; color: white;">Create</button>
+      </div>
+
+      <!-- ANALYSER 3D -->
+      <div class="analyser3D" style="display: none;">
+        <ul class="list-group">
+          <li class="list-group-item border-bottom-0 bg-transparent" style="border-radius: 0px; border-color: #272727; padding: 0px;">
+            <table class="table table-borderless table-dark bg-transparent" id="table3D">
+              <thead>
+                <tr>
+                  <th scope="col" style="display:none">id</th>
+                  <th scope="col" colspan="2">X</th>
+                  <th scope="col" style="display:none">id</th>
+                  <th scope="col" colspan="2">Y</th>
+
+                  <th scope="col" style="display:none">id</th>
+                  <th scope="col" colspan="2">Z</th>
+
+                  <th scope="col" style="display:none">id</th>
+                  <th scope="col" colspan="2">Color</th>
+
+                  <th scope="col"><button class="btn btn-outline-primary btn-sm float-right add3DButton" type="button"><i class="fa fa-plus"></i></button></th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </li>
+          <li class="list-group-item bg-transparent" style="border-radius: 0px; border-color: #272727;  padding: 0px;">
+            <div class="row">
+              <div class="col-6 pr-0">
+                <!-- X -->
+                <form action="" method="post" style="margin: 5px">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text ">X</span>
+                    </div>
+                      <select class="custom-select" id="inputParameterSetX" data-topics="{{ topics }}" name="inputParameterSet" style="background-color: #272727;">
+                        {% for s in set %}
+                          <option >{{s}}</option>
+                        {% endfor %}
+                      </select>
+
+                      <button class="btn btn-outline-primary dropdown-toggle topics" for="inputGroupSelect01" type="button" id="dropdownMenuButtonX" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Topics</button>
+                      <div class="dropdown-menu pre-scrollable" id="inputTopicX" data-params="{{ topics }}" aria-labelledby="dropdownMenuButton">
+                        {% for key in topics[set[0]].keys() %}
+                          <a type="button" class="dropdown-item topicSelectedX" data-name="{{ key }}" data-set="{{ set[0] }}" >{{ key }}</a>
+                        {% endfor %}
+                      </div>
+                    <select class="custom-select " id="inputParameterSelectX" name="inputParameterSelect" style="background-color: #272727;">
+                      <option selected></option>
+                    </select>
+                  </div>
+                </form>
+                <!-- Z -->
+                <form action="" method="post" style="margin: 5px">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text ">Z</span>
+                    </div>
+                      <select class="custom-select " id="inputParameterSetZ" data-topics="{{ topics }}" name="inputParameterSet" style="background-color: #272727;">
+                        {% for s in set %}
+                          <option >{{s}}</option>
+                        {% endfor %}
+                      </select>
+
+                      <button class="btn btn-outline-primary dropdown-toggle topics" for="inputGroupSelect01" type="button" id="dropdownMenuButtonZ" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Topics</button>
+                      <div class="dropdown-menu pre-scrollable" id="inputTopicZ" data-params="{{ topics }}" aria-labelledby="dropdownMenuButton">
+                        {% for key in topics[set[0]].keys() %}
+                          <a type="button" class="dropdown-item topicSelectedZ" data-name="{{ key }}" data-set="{{ set[0] }}" >{{ key }}</a>
+                        {% endfor %}
+                      </div>
+                    <select class="custom-select " id="inputParameterSelectZ" name="inputParameterSelect" style="background-color: #272727;">
+                      <option selected></option>
+                    </select>
+                  </div>
+                </form>
+              </div>
+              <div class="col-6 pl-0">
+                <!-- Y -->
+                <form action="" method="post" style="margin: 5px">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text ">Y</span>
+                    </div>
+                      <select class="custom-select " id="inputParameterSetY" data-topics="{{ topics }}" name="inputParameterSet" style="background-color: #272727;">
+                        {% for s in set %}
+                          <option >{{s}}</option>
+                        {% endfor %}
+                      </select>
+
+                      <button class="btn btn-outline-primary dropdown-toggle topics" for="inputGroupSelect01" type="button" id="dropdownMenuButtonY" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Topics</button>
+                      <div class="dropdown-menu pre-scrollable" id="inputTopicY" data-params="{{ topics }}" aria-labelledby="dropdownMenuButton">
+                        {% for key in topics[set[0]].keys() %}
+                          <a type="button" class="dropdown-item topicSelectedY" data-name="{{ key }}" data-set="{{ set[0] }}" >{{ key }}</a>
+                        {% endfor %}
+                      </div>
+                    <select class="custom-select " id="inputParameterSelectY" name="inputParameterSelect" style="background-color: #272727;">
+                      <option selected></option>
+                    </select>
+                  </div>
+                </form>
+                <!-- COLOR -->
+                <form action="" method="post" style="margin: 5px">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text ">C</span>
+                    </div>
+                      <select class="custom-select " id="inputParameterSetColor" data-topics="{{ topics }}" name="inputParameterSet" style="background-color: #272727;">
+                        {% for s in set %}
+                          <option >{{s}}</option>
+                        {% endfor %}
+                      </select>
+
+                      <button class="btn btn-outline-primary dropdown-toggle topics" for="inputGroupSelect01" type="button" id="dropdownMenuButtonColor" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Topics</button>
+                      <div class="dropdown-menu pre-scrollable" id="inputTopicColor" data-params="{{ topics }}" aria-labelledby="dropdownMenuButton">
+                        {% for key in topics[set[0]].keys() %}
+                          <a type="button" class="dropdown-item topicSelectedColor" data-name="{{ key }}" data-set="{{ set[0] }}" >{{ key }}</a>
+                        {% endfor %}
+                      </div>
+                    <select class="custom-select " id="inputParameterSelectColor" name="inputParameterSelect" style="background-color: #272727;">
+                      <option selected></option>
+                    </select>
+                  </div>
+                </form>
+              </div>
+              <hr style='margin-top: 0' />
+              </div>
+          </li>
+
+
+        <div class="input-group input-group-sm mt-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text ">Time</span>
+          </div>
+          <input type="text" class="form-control text-center" placeholder="Start {{ timeSE[0] }}" id="startTime" data-start="{{ timeSE[0] }}">
+          <input type="text" class="form-control text-center" placeholder="End {{ timeSE[1] }}" id="endTime" data-end="{{ timeSE[1] }}">
+        </div>
+        <div class="input-group input-group-sm mt-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Tail</span>
+          </div>
+          <input type="text" class="form-control text-center" placeholder="3000" id="tail3D">
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <button class="btn btn-outline-warning btn-block mt-3" type="button" name="button" id="simulate3DData" style="border-color: #0275d8; color: white;">Simulate</button>
+          </div>
+          <div class="col-6">
+            <button class="btn btn-outline-success btn-block mt-3" type="button" name="button" id="send3DData" style="border-color: #0275d8; color: white;">Create Chart</button>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- ANALYSER SETTINGS -->
+      <div class="analyserSettings" style="display: none;">
+        <div class="card">
+          <table class="table table-borderless table-dark bg-transparent" id="topicsSettTable" data-logIds="{{ setIds }}" data-type="{{type}}" data-id="{{id}}">
+            <thead>
+              <tr>
+                <th scope="col">Select Topics...</th>
+                <th scope="col"><button type="button" class="btn btn-outline-primary btn-sm float-right" id="saveSettTopics"><i class="fa fa-floppy-o"></i></button>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block body_block %}
+
+<div class="d-flex vh-100">
+  <div class="d-flex w-100 justify-content-center align-self-center">
+
+      <div class="card" style="width: 40rem;">
+        <h5 class="card-header text-white text-center pt-4" style="background-color: #272727;">
+          <strong>Create a new Log</strong>
+        </h5>
+        <div class="card-body px-lg-5 pt-0">
+
+
+
+<!-- FORM -->
+<form enctype="multipart/form-data" method="post" class="text-center">
+  {{ form.hidden_tag() }}
+  <div class="form-group mt-3">
+    {{ form.title.label(class="form-control-label text-muted") }}
+    {{ form.title(class="form-control border-secondary form-control-lg", style="background-color: #272727;") }}
+  </div>
+  <div class="form-group">
+    {{ form.notes.label(class="form-control-label text-muted") }}
+   {{ form.notes(class="form-control border-secondary form-control-lg", rows="7", style="background-color: #272727;") }}
+  </div>
+  <div class="form-group">
+      <div class="input-group">
+        <div class="custom-file">
+          {{ form.log_file(class="custom-file-input", id="inputGroupFile01")}}
+          <label class="custom-file-label" for="inputGroupFile01" id="selectedFile">Choose file</label>
+        </div>
+      </div>
+      {% if form.log_file.errors %}
+        {% for error in form.log_file.errors %}
+        <span class="text-danger">{{ error }}</span><br>
+        {% endfor %}
+      {% endif %}
+  </div>
+  <div class="form-group">
+    {{ form.add_file(class="btn btn-block btn-outline-success loading") }}
+  </div>
+</form>
+
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+<div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="addSessionModal" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content border-0">
+    <div class="modal-header float-center">
+      <h4 class="modal-title float-center text-white" id="loadingLabel">
+        Please wait...
+      </h4>
+    </div>
+    <div class="modal-body">
+      <p class="text-white">csv files are being extracted and saved to Analyser...</p>
+      <div class="d-flex justify-content-center align-items-center">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+          <span class="sr-only"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+
+{% endblock %}

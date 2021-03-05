@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block body_block %}
+
+
+<div class="d-flex vh-100">
+  <div class="d-flex w-100 justify-content-center align-self-center">
+
+      <div class="card" style="width: 50rem;">
+        <h5 class="card-header text-white text-center pt-4" style="background-color: #272727;">
+          <strong>Create a new Project</strong>
+        </h5>
+        <div class="card-body px-lg-5 pt-0">
+
+<!-- FORM -->
+<form method="post" action="" class="text-center">
+  {{ form.hidden_tag() }}
+  <fieldset class="form-group text-white">
+    <div class="form-group mt-3">
+      {{ form.project_name.label(class="form-control-label text-muted") }}
+      {{ form.project_name(class="form-control border-secondary form-control-lg", style="background-color: #272727;") }}
+    </div>
+    <div class="form-group">
+      {{ form.project_description.label(class="form-control-label text-muted") }}
+      {{ form.project_description(class="form-control border-secondary form-control-lg", rows="4", style="background-color: #272727;") }}
+    </div>
+    <div class="form-group">
+      {{ form.company.label(class="form-control-label text-muted") }}
+      {{ form.company(class="form-control border-secondary form-control-lg", style="background-color: #272727;") }}
+    </div>
+    <div class="form-group">
+      {{ form.engineer.label(class="form-control-label text-muted") }}
+      {{ form.engineer(class="form-control border-secondary form-control-lg", style="background-color: #272727;") }}
+    </div>
+  </fieldset>
+  <div class="form-group">
+    {{ form.submit(class="btn btn-outline-success btn-block text-white") }}
+  </div>
+</form>
+<p class="float-right text-muted">Project title must be unique</p>
+
+
+</div>
+</div>
+</div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block body_block %}
+
+<div class="d-flex vh-100">
+  <div class="d-flex w-100 justify-content-center align-self-center">
+
+      <div class="card" style="width: 70rem;">
+        <h5 class="card-header text-white text-center pt-4" style="background-color: #272727;">
+          <strong>Create a new Set</strong>
+        </h5>
+        <div class="card-body pt-0">
+
+
+
+
+<!-- FORM -->
+<form method="post" class="text-center">
+  <div class="row">
+    <div class="col-3 mt-3">
+      <div class="form-group">
+        <label class="form-control-label text-muted" for="SetTitle">Name</label>
+        <input type="text" name="setTitle" value="" id="setTitle" class="form-control border-secondary form-control-lg", style="background-color: #272727;">
+      </div>
+      <div class="form-group">
+        <label class="form-control-label text-muted" for="SetNotes">Notes</label>
+        <textarea id="setNotes" name="setNotes" rows="10" class="form-control border-secondary form-control-lg", style="background-color: #272727;"></textarea>
+      </div>
+
+    </div>
+    <div class="col-3 mt-3">
+      <div class="card"  style="height: 30rem;">
+        <div class="overflow-auto">
+          <table class="table table-borderless table-dark bg-transparent" id="LogsForSetTable" data-session_id="{{ session_id }}">
+            <thead>
+              <tr>
+                <th scope="col" style="display:none">id</th>
+                <th scope="col">Select Logs to add</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for log in logs: %}
+              <tr>
+                <th scope="row" style="display:none">{{ log.id }}</th>
+                <td><i class="fa fa-chevron-down float-left down"></i> {{ log.title }}</td>
+                <td><input type="checkbox"></td>
+
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+    </div>
+    <button type="button" class="btn btn-block btn-outline-primary mt-2" id="commitSetButton">Commit</button>
+    </div>
+
+    <div class="col-6 mt-3">
+      <div class="card"  style="height: 30rem;">
+        <div class="overflow-auto">
+          <table class="table table-borderless table-dark bg-transparent" id="topicsOfSettTable" data-settTopics="{{ settTopics }}" data-type="{{type}}" data-id="{{id}}">
+            <thead>
+              <tr>
+                <th scope="col">Select Topics</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
+        </div>
+      <button type="button" class="btn btn-block btn-outline-success align-bottom mt-2" id="createSetButton" style="color: #0275d8;" disabled>Create</button>
+    </div>
+  </div>
+
+
+
+</form>
+
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+{% endblock %}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+{% extends "project.html" %}
+{% block project_block %}
+
+<nav>
+  <div class="container">
+      <span class="navbar-brand mb-0 h1" style="color: #FFFFFF">{{ project.title }}</span>
+      <div class="btn-group btn-group-sm float-right" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-outline-secondary btn-sm projectUpdate" data-title="{{ project.title }}" data-id="{{ project.id }}" data-notes="{{ project.notes }}"><i class="fa fa-pencil"></i></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm projDelete"
+            data-type="Project" data-title="{{ project.title }}" data-id="{{ project.id }}"><i class="fa fa-times"></i></button>
+      </div>
+    </div>
+</nav>
+<hr style='margin-top: 0' />
+
+<div class="container">
+  <p class="lead text-left">
+    {{ project.notes }}
+  </p>
+</div>
+
+{% endblock %}

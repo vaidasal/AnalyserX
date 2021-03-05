@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block body_block %}
+
+
+
+<div class="d-flex vh-100">
+  <div class="d-flex w-100 justify-content-center align-self-center">
+
+      <div class="card" style="width: 40rem;">
+        <h5 class="card-header text-white text-center pt-4" style="background-color: #272727;">
+          <strong>Create a new Session</strong>
+        </h5>
+        <div class="card-body px-lg-5 pt-0">
+
+          <!-- FORM -->
+          <form method="post" action="" class="text-center">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+              <div class="form-group mt-3">
+                {{ form.title.label(class="form-control-label text-muted") }}
+                {{ form.title(class="form-control border-secondary form-control-lg") }}
+              </div>
+              <div class="form-group">
+                {{ form.notes.label(class="form-control-label text-muted") }}
+                {{ form.notes(class="form-control border-secondary form-control-lg", rows="7") }}
+              </div>
+            </fieldset>
+            <div class="form-group">
+              {{ form.add(class="btn btn-outline-success btn-block text-white") }}
+            </div>
+          </form>
+
+        </div>
+      </div>
+  </div>
+</div>
+
+
+
+
+
+{% endblock %}
