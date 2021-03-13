@@ -181,22 +181,23 @@ def new_log(session):
             curr_project = current_user.get_id()
             setting = Settings.query.filter_by(project_id=curr_project).first()
 
-            (log_path, file_name) = save_file(form.log_file.data)
-            plugin = Plugins()
-            plugin.addToOneLog(file_name, log_path)
+            for file in form.log_file.data:
+                (log_path, file_name) = save_file(file)
+                plugin = Plugins()
+                plugin.addToOneLog(file_name, log_path)
 
-            enteredTitle = str(form.title.data)
-            if enteredTitle == "":
-                enteredTitle = str(file_name)
+                enteredTitle = str(form.title.data)
+                if enteredTitle == "":
+                    enteredTitle = str(file_name)
 
-            lg = Log(title=str(enteredTitle),
-                     notes=str(form.notes.data),
-                     session_id=int(session),
-                     file_name=(str(file_name)),
-                     dir_name=str(log_path),
-                     def_topics=setting.topics)
-            db.session.add(lg)
-            db.session.commit()
+                lg = Log(title=str(enteredTitle),
+                         notes=str(form.notes.data),
+                         session_id=int(session),
+                         file_name=(str(file_name)),
+                         dir_name=str(log_path),
+                         def_topics=setting.topics)
+                db.session.add(lg)
+                db.session.commit()
         return redirect(url_for('session', session_id=session))
     return render_template("new_log.html", form=form)
 
