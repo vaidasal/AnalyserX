@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, SubmitField, BooleanField, SelectField
+from wtforms import StringField, SubmitField, BooleanField, SelectField, MultipleFileField
 from wtforms.validators import DataRequired, Length, ValidationError
 from analyser.models import Project
 from wtforms.widgets import TextArea
@@ -35,5 +35,5 @@ class AddLogForm(FlaskForm):
                         #validators=[DataRequired(), Length(min=2, max=20)]
                         )
     notes = StringField(label='Notes', widget=TextArea())
-    log_file = FileField('Add Log', validators=[FileAllowed(['ulg'])])
+    log_file = MultipleFileField('Add Log', validators=[FileAllowed(['ulg'])])
     add_file = SubmitField('Add')
