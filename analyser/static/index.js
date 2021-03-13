@@ -145,8 +145,10 @@ $(".loading").click(function () {
 
 
 $('#inputGroupFile01').change(function() {
-  var file = $('#inputGroupFile01').val().substring(12);
-  $('#selectedFile').text(file)
+  var selectedFiles = $('#inputGroupFile01').prop("files")
+  var names = $.map(selectedFiles, function(val) { return val.name; });
+  names = names.toString();
+  $('#selectedFile').text(names)
 })
 
 $('#lightThemeCheck').change(function() {
