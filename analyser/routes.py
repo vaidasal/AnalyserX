@@ -185,7 +185,11 @@ def new_log(session):
             plugin = Plugins()
             plugin.addToOneLog(file_name, log_path)
 
-            lg = Log(title=str(form.title.data),
+            enteredTitle = str(form.title.data)
+            if enteredTitle == "":
+                enteredTitle = str(file_name)
+
+            lg = Log(title=str(enteredTitle),
                      notes=str(form.notes.data),
                      session_id=int(session),
                      file_name=(str(file_name)),
