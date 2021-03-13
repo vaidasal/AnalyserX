@@ -25,13 +25,15 @@ class SelectProjectForm(FlaskForm):
 
 class AddSessionForm(FlaskForm):
     title = StringField('Title',
-                        validators=[DataRequired(), Length(min=2, max=20)])
+                        validators=[DataRequired(), Length(min=1)]
+                        )
     notes = StringField(label='Notes', widget=TextArea())
     add = SubmitField('Create')
 
 class AddLogForm(FlaskForm):
     title = StringField('Title',
-                        validators=[DataRequired(), Length(min=2, max=20)])
+                        #validators=[DataRequired(), Length(min=2, max=20)]
+                        )
     notes = StringField(label='Notes', widget=TextArea())
     log_file = FileField('Add Log', validators=[FileAllowed(['ulg'])])
     add_file = SubmitField('Add')
