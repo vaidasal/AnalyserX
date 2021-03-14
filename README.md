@@ -26,7 +26,7 @@ then open http://127.0.0.1:48734/ in your browser (you can change the port in ru
 
 # Plugins
 It is possible to calculate special parameters for your use case when importing .ulg files or creating a set by synchronising two log files. Everytime, when a new log or set is added, AnalyserX will look at plugins.py file to see if there are functions, that could be applied for current dataset. Just by editing plugins.py file you can add custom functionality or make changes on imported log files.
-As default following parameters will be calculated: distance between two points, Euler angle, ground speed, acceleration. These parameters will be added to log data as 'calculated' topic. If parameter names, needed for calculations, are not found, calculation will not be executed.
+As default following parameters will be calculated: distance between two or more vehiches and Lat Lon to XYZ conversion (vehicle_global_position_0 needed), Euler angle (vehicle_attitude_0), ground speed (vehicle_global_position_0), vector length for acceleration (vehicle_local_position_0) and accelerometer (sensor_combined_0). These parameters will be added to log data as 'calculated' topic. If parameter names, needed for calculations, are not found, calculation will not be executed.
 
 # Create a new Project
 <img width="1345" alt="Screenshot 2021-03-05 at 13 28 29" src="https://user-images.githubusercontent.com/51539520/110147154-9e2d2280-7ddb-11eb-8323-4435ecd4cfa4.png">
