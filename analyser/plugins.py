@@ -215,13 +215,13 @@ class Plugins:
             print("acceleration added")
 
         ###### ACCELEROMETER #####
-        topic = "____"
+        topic = "sensor_combined_0"
         if topic in topList:
             filename = fName + '_' + topic + '.csv'
             filename = os.path.join(app.root_path, 'static', 'user_data', dirName, filename)
             data = pd.read_csv(filename)
             calc = {}
-            calc['a_tot_sc'] = self.totalVector(data['accelerometer_m_s2[0]'], data['accelerometer_m_s2[1]'], data['accelerometer_m_s2[2]'])
+            calc['a_tot_sensComb'] = self.totalVector(data['accelerometer_m_s2[0]'], data['accelerometer_m_s2[1]'], data['accelerometer_m_s2[2]'])
             calc['timestamp'] = data['timestamp']
             calc['dateTime'] = pd.to_datetime(data['timestamp'], unit='us').dt.round('ms')
             calc = pd.DataFrame(data=calc)
