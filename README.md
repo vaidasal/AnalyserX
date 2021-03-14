@@ -39,7 +39,7 @@ On the left side you can create new test sessions. In the middle you can add tas
 <img width="1348" alt="Screenshot 2021-03-05 at 14 00 18" src="https://user-images.githubusercontent.com/51539520/110147108-92d9f700-7ddb-11eb-9194-4324c5c9efce.png">
 
 # Set
-If you have multiple logs, made at the same time, you can create a set of them. These logs will be synchronised by time. In this way you will be able to view all of them in one plot. Time synchronisation is based on parameter 'vehicle_gps_position_0'. 
+If you have multiple logs, made at the same time, you can create a set of them. These logs will be synchronised by time. In this way you will be able to view all of them in one plot. Time synchronisation is based on parameter 'vehicle_gps_position_0'. It's therefore advised to select this parameter when creating a new set. Otherwise syncronisation will be based on timestamp.
 <img width="1348" alt="Screenshot 2021-03-05 at 15 04 09" src="https://user-images.githubusercontent.com/51539520/110147317-d2084800-7ddb-11eb-8f22-0056feecbdca.png">
 
 # Visualisation
@@ -56,6 +56,9 @@ On the left side you can select parameters for left and right axis. You have to 
 ![Screenshot 2021-03-05 at 15 15 19](https://user-images.githubusercontent.com/51539520/110149982-fca7d000-7dde-11eb-8f2e-e96dcd6f4abc.png)
 
 <img width="978" alt="Screenshot 2021-03-05 at 15 15 57" src="https://user-images.githubusercontent.com/51539520/110150985-31685700-7de0-11eb-8c9a-22891574a183.png">
+
+# Time Synchronisation
+AnalyserX looks for 'vehicle_gps_position_0' for gps time with timestamp synchronisation. It's calculated only when creating a set. In order to see gps time on x-Axes, a set (of one log) must be created. 
 
 # PDF Export
 It is possible to create a test session report in PDF. You can select, which information should be included.
