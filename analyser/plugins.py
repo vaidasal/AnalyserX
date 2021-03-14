@@ -12,7 +12,7 @@ from analyser import app
 class Plugins:
 
     def addToMultipleLogs(self, mergedData, set_path, log_list):
-        print("addToMultipleLogs")
+        print("Calculating plugin parameter...")
 
         mergedData = self.distanceCalc(mergedData, log_list)
         mergedData = self.latLonToXYZ(mergedData, log_list)
@@ -20,12 +20,12 @@ class Plugins:
         filename = os.path.join(app.root_path, 'static', 'user_data', set_path, 'merged.csv')
         mergedData.to_csv(filename, index=False)
 
+        print("Plugin calculation completed")
 
         return
 
     # Calculate distance between two points and add to merged dataset
     def distanceCalc(self, mergedData, log_list):
-        print('calculating distance...')
         topic = 'vehicle_global_position_0'
         parameters = ['lat','lon', 'alt']
         cols = []
@@ -36,6 +36,7 @@ class Plugins:
                 cols.append(cName)
 
         if set(cols) <= set(mergedData.keys()):
+            print('calculating distance...')
             lat = "__-__lat__-__" + topic
             lon = "__-__lon__-__" + topic
             alt = "__-__alt__-__" + topic
@@ -69,14 +70,12 @@ class Plugins:
                 data[altName] = alti
                 data[euclName] = eucl_dist
 
-
-        print('distance complete')
+            print('distance complete')
 
         return (data)
 
 
     def latLonToXYZ(self, mergedData, log_list):
-        print("calculating lat lon to xyz...")
         topic = 'vehicle_global_position_0'
         parameters = ['lat', 'lon', 'alt']
         cols = []
@@ -87,6 +86,7 @@ class Plugins:
                 cols.append(cName)
 
         if set(cols) <= set(mergedData.keys()):
+            print("calculating lat lon to xyz...")
             lat = "__-__lat__-__" + topic
             lon = "__-__lon__-__" + topic
             alt = "__-__alt__-__" + topic
@@ -114,7 +114,7 @@ class Plugins:
                 data[name + 'y__-__calculated'] = y1
                 data[name + 'z__-__calculated'] = z1
 
-        print('lat lon to XYZ conversion completed')
+            print('lat lon to XYZ conversion completed')
 
         return (data)
 
@@ -162,7 +162,7 @@ class Plugins:
 
 
     def addToOneLog(self, fileName, dirName):
-        print("calculating one Log data...")
+        print("calculating Log data...")
         (topList, fName) = self.getFileList(fileName,dirName)  # returns list of topic-names and filename (without .csv)
         calcList = []
 
@@ -182,6 +182,7 @@ class Plugins:
             calc['dateTime'] = pd.to_datetime(data['timestamp'], unit='us').dt.round('ms')
             calc = pd.DataFrame(data=calc)
             calcList.append(calc)
+            print("Euler added")
 
         ###### GROUND SPEED ######
         topic = "vehicle_global_position_0"
@@ -197,6 +198,7 @@ class Plugins:
             calc['dateTime'] = pd.to_datetime(data['timestamp'], unit='us').dt.round('ms')
             calc = pd.DataFrame(data=calc)
             calcList.append(calc)
+            print("Ground speed added")
 
         ###### ACCELERATION #####
         topic = "vehicle_local_position_0"
@@ -210,6 +212,7 @@ class Plugins:
             calc['dateTime'] = pd.to_datetime(data['timestamp'], unit='us').dt.round('ms')
             calc = pd.DataFrame(data=calc)
             calcList.append(calc)
+            print("acceleration added")
 
         ###### ACCELEROMETER #####
         topic = "____"
@@ -222,6 +225,8 @@ class Plugins:
             calc['timestamp'] = data['timestamp']
             calc['dateTime'] = pd.to_datetime(data['timestamp'], unit='us').dt.round('ms')
             calc = pd.DataFrame(data=calc)
+            calcList.append(calc)
+            print("accelerometer added")
 
         data = sorted(calcList, key=len, reverse=True)
         mData = data[0]
@@ -242,7 +247,7 @@ class Plugins:
         filename = os.path.join(app.root_path, 'static', 'user_data', dirName, filename)
         mData.to_csv(filename, index=False)
 
-        print("Data saved")
+        print("calculated saved")
 
 
     # Convert Qaternion -> Euler

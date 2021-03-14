@@ -52,11 +52,11 @@ def settings():
             db.session.commit()
         elif "lightTheme" in data.keys():
             if data["lightTheme"] == "light":
-                print("light")
+                print("light selected")
                 setting.color_theme = "light"
             else:
                 setting.color_theme = "dark"
-                print("dark")
+                print("dark selected")
             db.session.commit()
 
     setting = Settings.query.filter_by(project_id=curr_project).first()
@@ -92,7 +92,7 @@ def datasettings():
 
 @app.route('/savepdf', methods=['POST','GET'])
 def savepdf():
-    print("savePDF")
+    print("saving PDF...")
     data = request.get_json()
     today = date.today()
     noteCh = data["notes"]
@@ -136,6 +136,7 @@ def savepdf():
     pdf.output(pdf_path, 'F')
     resp = jsonify(random_hex)
     time.sleep(0.5)
+    print("PDF completed")
     return resp
 
 
@@ -154,8 +155,7 @@ def new_project():
         flash(f'{form.project_name.data} Project was created!', 'success')
         return redirect(url_for('home'))
 
-    return render_template("new_project.html", #names=data_txt.keys(),
-            form=form)
+    return render_template("new_project.html", form=form)
 
 @app.route('/new_session', methods=["GET","POST"])
 def new_session():
@@ -167,13 +167,13 @@ def new_session():
                       project_id=int(current_user.get_id()))
         db.session.add(ses)
         db.session.commit()
+        print("new Session has been created")
         return redirect(url_for('session', session_id=ses.id))
 
     return render_template("new_session.html", form=form)
 
 @app.route('/new_log/<session>', methods=["GET","POST"])
 def new_log(session):
-    print("newLog")
     form = AddLogForm()
     if form.validate_on_submit():
         if form.log_file.data:
@@ -198,6 +198,7 @@ def new_log(session):
                          def_topics=setting.topics)
                 db.session.add(lg)
                 db.session.commit()
+                print("Log was successfuly saved to {}".format(log_path))
         return redirect(url_for('session', session_id=session))
     return render_template("new_log.html", form=form)
 
@@ -233,12 +234,11 @@ def refresh():
 
 @app.route('/new_set/<session>', methods=["GET","POST"])
 def new_set(session):
-    print("newSet")
     logs = Log.query.filter_by(session_id=session).all()
 
     if request.method == 'POST':
+        print("creating a new set...")
         sets = request.get_json()
-        print(sets)
 
         set_path = createSetDir()
         mergedData = readAndMergeData(sets["logs"], sets["tops"])
@@ -263,7 +263,6 @@ def new_set(session):
 @app.route('/loadtopics', methods=["POST"])
 def loadtopics():
     logs = request.get_json()
-    print(logs)
     curr_project = current_user.get_id()
     reader = DataReader()
     topArr = []
@@ -610,7 +609,6 @@ def chart3D():
 
 import fnmatch
 def getFileList(fileName, dirName):
-    print("getFileList")
     listOfCSVs = []
     fName = fileName.split('.')[0]
     fLen = len(fName) + 1
@@ -644,9 +642,9 @@ def session(session_id):
                             tasks=curr_tasks, sets=curr_sets)
 
 def save_file(form_file):
-    print("save_file")
     random_hex = secrets.token_hex(8)
     file_name, _ = os.path.splitext(form_file.filename)
+    print("importing {}...".format(file_name))
     log_path = os.path.join(app.root_path, 'static', 'user_data', random_hex)
     while os.path.isdir(log_path):
         random_hex = secrets.token_hex(8)
@@ -666,20 +664,18 @@ def save_file(form_file):
     return (random_hex, file_name)
 
 def createSetDir():
-    print("createSetDir")
     random_hex = secrets.token_hex(8)
     set_path = os.path.join(app.root_path, 'static/user_data', random_hex)
     while os.path.isdir(set_path):
         random_hex = secrets.token_hex(8)
         set_path = os.path.join(app.root_path, 'static/user_data', random_hex)
     os.mkdir(set_path)
+    print("Directory created at {}".format(random_hex))
     return random_hex
 
 def readAndMergeData(log_id_list, def_topics):
-    print("readAndMergeData")
     reader = DataReader()
     allDataSet = []
-    print(def_topics)
 
     for lg in log_id_list:
         log = Log.query.filter_by(id=lg).first()
@@ -687,13 +683,14 @@ def readAndMergeData(log_id_list, def_topics):
         dirName = os.path.join(app.root_path, 'static', 'user_data', log.dir_name)
         (topList, fName) = getFileList(fileName, dirName)  # returns list of topic-names and filename (without .csv)
         lst = [x for x in def_topics if x in topList]
-        print(f"lst: {lst}; for lg: {lg}")
         allDataSet.append(reader.readDataFromDir(log.id, dirName, fName, lst))
 
     mergedData = allDataSet[0]
     for i in range(len(allDataSet) - 1):
         mergedData = pd.merge_asof(left=mergedData, right=allDataSet[i + 1], on='timestamp', direction='nearest',
                                    tolerance=pd.Timedelta('500ms'))
+    print("Set data has been merged")
+    print(f"Set Timestamp Range: {mergedData['timestamp'].iloc[0]} - {mergedData['timestamp'].iloc[-1]}")
 
     return mergedData
 

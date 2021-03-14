@@ -73,7 +73,6 @@ class DataReader:
 
     def readDataNames(self, setNum, dirName, number, namesArray):
         namesDict = {}
-        print("readLogNames")
         timeStamp = ['00:00:00', '00:00:00']
         timeUtc = ['00:00:00', '00:00:00']
 
@@ -89,12 +88,10 @@ class DataReader:
 
             if t:
                 timeStamp = self.getStartEndTime(pd.to_datetime(data["timestamp"], unit='us').dt.round('ms'), False)
-                print(f"timestamp: {timeStamp}")
                 t = False
 
             if "time_utc_usec" in data.columns:
                 timeUtc = self.getStartEndTime(pd.to_datetime(data["time_utc_usec"], unit='us').dt.round('ms'), False)
-                print(f"timeUtc: {timeUtc}")
                 t = False
 
             cols = data.columns.tolist()
@@ -108,7 +105,7 @@ class DataReader:
 
     # Read Files:
     def readDataFromDir(self, setNum, dirName, number, namesArray):
-        print("reading Data...")
+        print(f"reading Log Data from {dirName}...")
         dataSet = []
         changeTime = False
         tDelta = 0
@@ -132,7 +129,7 @@ class DataReader:
                 data['timedelta_stamp_utc'] = GPSTime - data['timestamp']
                 changeTime = True
                 tDelta = data['timedelta_stamp_utc'].mean()
-            
+
             # add setNumber and fileNumber to column name
             for col in data.columns:
                 if col not in ['timestamp', 'timedelta_stamp_utc']:
@@ -150,13 +147,17 @@ class DataReader:
             mData = pd.merge_asof(left=mData, right=data[i + 1], on='timestamp',
                                   tolerance=pd.Timedelta('1000ms'))
 
-        #print(mData['timestamp'])
         if changeTime:
             mData['timestamp'] = mData['timestamp'] + tDelta
+            print("timestamp corrected with gps time")
+        else:
+            print("timestamp correction on gps time not available because time_utc_usec parameter could not be found")
 
         if "timedelta_stamp_utc" in mData.keys():
             mData.drop(columns=["timedelta_stamp_utc"], inplace=True)
-        print("data merged")
+
+        print(f"timestamp range: {mData['timestamp'].iloc[0]} - {mData['timestamp'].iloc[-1]}")
+        print("Log reading completed")
         return (mData)
 
 
