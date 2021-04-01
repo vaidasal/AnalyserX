@@ -69,7 +69,7 @@ It is possible to create a test session report in PDF. You can select, which inf
 It should be possible to move AnalyserX to different locations on your file system. Links for files and data are relative.
 
 # Disclaimer
-It is the first version of AnalyserX. It is not well tested und might include bugs and other inefficiencies. Many of the functions are expecting certain parameter names. Default names should work with data set made by Pixhawk devices. I am open to improvements and suggestions.
+It is the first version of AnalyserX. It is not well tested so it might include bugs and other inefficiencies. Many of the functions are expecting certain parameter names. Default names should work with data set made by Pixhawk devices. I am open to improvements and suggestions.
 
 # Thank you
 In order to write this program I used a lot of help from different sources.
