@@ -174,45 +174,48 @@ class Plugins:
             data = pd.read_csv(filename)
 
             calc = {}
-            eulerXYZ = self.qatToEul(data["q[0]"], data["q[1]"], data["q[2]"], data["q[3]"])
-            calc['eulerX'] = eulerXYZ[0]
-            calc['eulerY'] = eulerXYZ[1]
-            calc['eulerZ'] = eulerXYZ[2]
-            calc['timestamp'] = data['timestamp']
-            calc['dateTime'] = pd.to_datetime(data['timestamp'], unit='us').dt.round('ms')
-            calc = pd.DataFrame(data=calc)
-            calcList.append(calc)
-            print("Euler added")
+            par = ["q[0]","q[1]","q[2]","q[3]"]
+            if set(par).issubset(data.columns):
+                eulerXYZ = self.qatToEul(data[par[0]], data[par[0]], data[par[0]], data[par[0]])
+                calc['eulerX'] = eulerXYZ[0]
+                calc['eulerY'] = eulerXYZ[1]
+                calc['eulerZ'] = eulerXYZ[2]
+                calc['timestamp'] = data['timestamp']
+                calc['dateTime'] = pd.to_datetime(data['timestamp'], unit='us').dt.round('ms')
+                calc = pd.DataFrame(data=calc)
+                calcList.append(calc)
+                print("Euler added")
 
-        ###### GROUND SPEED ######
-        topic = "vehicle_global_position_0"
-        if topic in topList:
-            filename = fName + '_' + topic + '.csv'
-            filename = os.path.join(app.root_path, 'static', 'user_data', dirName, filename)
-            data = pd.read_csv(filename)
-            calc = {}
-            calc['v_tot'] = self.totalVector(data["vel_n"], data["vel_e"], data["vel_d"])
-            sinGa = - data["vel_d"] / calc['v_tot']
-            calc['gamma'] = np.arcsin(sinGa)
-            calc['timestamp'] = data['timestamp']
-            calc['dateTime'] = pd.to_datetime(data['timestamp'], unit='us').dt.round('ms')
-            calc = pd.DataFrame(data=calc)
-            calcList.append(calc)
-            print("Ground speed added")
 
-        ###### ACCELERATION #####
+        ###### ACCELERATION, GROUNDSPEED #####
         topic = "vehicle_local_position_0"
         if topic in topList:
             filename = fName + '_' + topic + '.csv'
             filename = os.path.join(app.root_path, 'static', 'user_data', dirName, filename)
             data = pd.read_csv(filename)
+
             calc = {}
-            calc['a_tot_locPos'] = self.totalVector(data["ax"], data["ay"], data["az"])
-            calc['timestamp'] = data['timestamp']
-            calc['dateTime'] = pd.to_datetime(data['timestamp'], unit='us').dt.round('ms')
-            calc = pd.DataFrame(data=calc)
-            calcList.append(calc)
-            print("acceleration added")
+            par = ["ax", "ay", "az"]
+            if set(par).issubset(data.columns):
+                calc['a_tot_locPos'] = self.totalVector(data[par[0]], data[par[1]], data[par[2]])
+                calc['timestamp'] = data['timestamp']
+                calc['dateTime'] = pd.to_datetime(data['timestamp'], unit='us').dt.round('ms')
+                calc = pd.DataFrame(data=calc)
+                calcList.append(calc)
+                print("Acceleration added")
+
+
+            calc = {}
+            par = ["vx", "vy", "vz"]
+            if set(par).issubset(data.columns):
+                calc['v_tot'] = self.totalVector(data[par[0]], data[par[1]], data[par[2]])
+                sinGa = - data[par[2]] / calc['v_tot']
+                calc['gamma'] = np.arcsin(sinGa)
+                calc['timestamp'] = data['timestamp']
+                calc['dateTime'] = pd.to_datetime(data['timestamp'], unit='us').dt.round('ms')
+                calc = pd.DataFrame(data=calc)
+                calcList.append(calc)
+                print("Ground speed added")
 
         ###### ACCELEROMETER #####
         topic = "sensor_combined_0"
@@ -220,13 +223,16 @@ class Plugins:
             filename = fName + '_' + topic + '.csv'
             filename = os.path.join(app.root_path, 'static', 'user_data', dirName, filename)
             data = pd.read_csv(filename)
+
             calc = {}
-            calc['a_tot_sensComb'] = self.totalVector(data['accelerometer_m_s2[0]'], data['accelerometer_m_s2[1]'], data['accelerometer_m_s2[2]'])
-            calc['timestamp'] = data['timestamp']
-            calc['dateTime'] = pd.to_datetime(data['timestamp'], unit='us').dt.round('ms')
-            calc = pd.DataFrame(data=calc)
-            calcList.append(calc)
-            print("accelerometer added")
+            par = ['accelerometer_m_s2[0]', 'accelerometer_m_s2[1]', 'accelerometer_m_s2[2]']
+            if set(par).issubset(data.columns):
+                calc['a_tot_sensComb'] = self.totalVector(data[par[0]], data[par[1]], data[par[2]])
+                calc['timestamp'] = data['timestamp']
+                calc['dateTime'] = pd.to_datetime(data['timestamp'], unit='us').dt.round('ms')
+                calc = pd.DataFrame(data=calc)
+                calcList.append(calc)
+                print("Accelerometer added")
 
         data = sorted(calcList, key=len, reverse=True)
         mData = data[0]
