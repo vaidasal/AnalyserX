@@ -183,8 +183,6 @@ def new_log(session):
 
             for file in form.log_file.data:
                 (log_path, file_name) = save_file(file)
-                plugin = Plugins()
-                plugin.addToOneLog(file_name, log_path)
 
                 enteredTitle = str(form.title.data)
                 if enteredTitle == "":
@@ -198,6 +196,10 @@ def new_log(session):
                          def_topics=setting.topics)
                 db.session.add(lg)
                 db.session.commit()
+
+                plugin = Plugins()
+                plugin.addToOneLog(file_name, log_path)
+
                 print("Log was successfuly saved to {}".format(log_path))
         return redirect(url_for('session', session_id=session))
     return render_template("new_log.html", form=form)
