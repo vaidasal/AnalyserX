@@ -176,7 +176,7 @@ class Plugins:
             calc = {}
             par = ["q[0]","q[1]","q[2]","q[3]"]
             if set(par).issubset(data.columns):
-                eulerXYZ = self.qatToEul(data[par[0]], data[par[0]], data[par[0]], data[par[0]])
+                eulerXYZ = self.qatToEul(data[par[0]], data[par[1]], data[par[2]], data[par[3]])
                 calc['eulerX'] = eulerXYZ[0]
                 calc['eulerY'] = eulerXYZ[1]
                 calc['eulerZ'] = eulerXYZ[2]
