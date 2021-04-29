@@ -24,7 +24,6 @@ class DataReader:
         data = pd.read_csv(filename)
 
         cols = data.columns.tolist()
-        print(f"cols: {cols}")
         logs = []
         topics = []
         namesDict = {}
@@ -39,9 +38,6 @@ class DataReader:
             topic = c.split('__-__')[2]
             logs.append(logId)
             topics.append(topic)
-
-        print(f"logs: {logs}")
-        print(f"topics: {topics}")
 
         logs = set(logs)
         topics = set(topics)
@@ -104,11 +100,21 @@ class DataReader:
         return (namesDict, timeStamp, timeUtc)
 
     # Read Files:
-    def readDataFromDir(self, setNum, dirName, number, namesArray):
+    def readDataFromDir(self, setNum, dirName, number, namesArray, xAxTime):
+        if len(namesArray) == 0:
+            print("Selection is empty...")
+            return pd.DataFrame({})
+
         print(f"reading Log Data from {dirName}...")
         dataSet = []
         changeTime = False
         tDelta = 0
+
+        selectedNames = namesArray
+
+        if xAxTime and ("vehicle_gps_position_0" not in selectedNames):
+            selectedNames.append("vehicle_gps_position_0")
+
         
         for x in range(len(namesArray)):
             filename = dirName + '/' + number + '_' + namesArray[x] + '.csv'
@@ -122,7 +128,8 @@ class DataReader:
             data['timestamp'] = pd.to_datetime(data['timestamp'], unit='us').dt.round('ms')
             
             # calculate time diference between timestamp and gps time
-            if 'time_utc_usec' in data.columns:
+            if ('time_utc_usec' in data.columns) and xAxTime:
+                print("GPS Time correction")
                 GPSTime = pd.to_datetime(data['time_utc_usec'], unit='us').dt.round('ms')
                 data['time_utc_usec'] = GPSTime
 
@@ -150,15 +157,14 @@ class DataReader:
         if changeTime:
             mData['timestamp'] = mData['timestamp'] + tDelta
             print("timestamp corrected with gps time")
-        else:
-            print("timestamp correction on gps time not available because time_utc_usec parameter could not be found")
 
         if "timedelta_stamp_utc" in mData.keys():
             mData.drop(columns=["timedelta_stamp_utc"], inplace=True)
 
+
         print(f"timestamp range: {mData['timestamp'].iloc[0]} - {mData['timestamp'].iloc[-1]}")
         print("Log reading completed")
-        return (mData)
+        return mData
 
 
     # Merge Datasets
@@ -222,7 +228,6 @@ class DataReader:
         
         if len(matchingVel) > 3:
             print('v_tot got more than 3 arguments -> vel_ned or gamma could be faulty')
-            print(matchingVel)
             
         if matchingVel != []:
             print('adding ground speed')
@@ -246,7 +251,6 @@ class DataReader:
         
         if len(matchingAx) > 3:
             print('a_tot_locPos got more than 3 arguments -> a_tot_locPos could be faulty')
-            print(matchingAx)
         if matchingAx != []:
             print('adding total acceleration')
             ax = [a for a in matchingAx if "ax" in a]
@@ -260,7 +264,6 @@ class DataReader:
         matchingSc = self.filterStrings(mData.columns, ['accelerometer_m_s2[0]','accelerometer_m_s2[1]','accelerometer_m_s2[2]'])
         if len(matchingSc) > 3:
             print('a_tot_sc got more than 3 arguments -> a_tot_sc could be faulty')
-            print(matchingSc)
         if matchingSc != []:
             print('adding sensor combined acceleration')
             s0 = [s for s in matchingSc if 'accelerometer_m_s2[0]' in s]
@@ -473,7 +476,6 @@ class DataReader:
         latitude is the 90deg - zenith angle in range [-90;90]
         lonitude is the azimuthal angle in range [-180;180] 
         """
-        #print('lat: {}, lon: {}'.format(lat, lon))
         
         r = 6371 + (alt * 0.001)
         theta = math.radians(lat)
@@ -483,9 +485,7 @@ class DataReader:
         z = ((r * math.sin(theta)) - 4789.5) * 1000
         
         x, y, z = self.rotate3D(x,y,z, math.radians(8.92),math.radians(-41.26),math.radians(0))
-        
-        #print('lat: {}, lon: {}, r: {}, x: {}, y: {}, z: {}'.format(lat, lon, r, x,y,z))
-        
+
         return x, y, z
         
     def rotate3D(self, x,y,z, rx, ry, rz):
