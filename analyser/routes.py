@@ -193,7 +193,8 @@ def new_log(session):
                          session_id=int(session),
                          file_name=(str(file_name)),
                          dir_name=str(log_path),
-                         def_topics=setting.topics)
+                         def_topics=setting.topics,
+                         defGPSCheck=int(1))
                 db.session.add(lg)
                 db.session.commit()
 
@@ -227,7 +228,7 @@ def refresh():
         for log in set.log:
             lg_ids.append(log.id)
         topic_list = json.loads(set.def_topics)
-        mergedData = readAndMergeData(lg_ids, topic_list)
+        mergedData = readAndMergeData(lg_ids, topic_list, True if (set.defGPSCheck == 1) else False)
         plugin = Plugins()
         plugin.addToMultipleLogs(mergedData, dirName, lg_ids)
 
@@ -242,8 +243,12 @@ def new_set(session):
         print("creating a new set...")
         sets = request.get_json()
 
+        if (len(sets["logs"]) == 0) or (len(sets["tops"]) == 0):
+            print("Nothing selected. Set was not created.")
+            return jsonify(url_for('session', session_id=session))
+
         set_path = createSetDir()
-        mergedData = readAndMergeData(sets["logs"], sets["tops"])
+        mergedData = readAndMergeData(sets["logs"], sets["tops"], sets["syncOnGPS"])
         plugin = Plugins()
         plugin.addToMultipleLogs(mergedData, set_path, sets["logs"])
 
@@ -251,7 +256,8 @@ def new_set(session):
                   notes=str(sets["notes"]),
                 session_id=int(session),
                  dir_name=str(set_path),
-                 def_topics=json.dumps(sets["tops"]))
+                 def_topics=json.dumps(sets["tops"]),
+                 defGPSCheck=int(1 if sets["syncOnGPS"] else 2))
         db.session.add(st)
         db.session.flush()
         for l in sets["logs"]:
@@ -289,6 +295,7 @@ def loadtopics():
             topics[top] = True
         else:
             topics[top] = False
+
 
     resp = jsonify(topics)
     return resp
@@ -357,7 +364,6 @@ def delete(session):
         if "projTypeToDelete" in request.form.keys():
             id = current_user.id
             proj = Project.query.filter_by(id=id).first()
-            print(id)
             sessions = Session.query.filter_by(project_id=id).all()
             for ses in sessions:
                 logs = Log.query.filter_by(session_id=ses.id).all()
@@ -411,7 +417,15 @@ def delete(session):
             dirName = os.path.join(app.root_path, 'static', 'user_data', log.dir_name)
             if os.path.isdir(dirName):
                 shutil.rmtree(dirName)
+
+            sets = Set.query.filter(Set.log.any(id=log.id)).all()
             db.session.delete(log)
+            for set in sets:
+                dirName = os.path.join(app.root_path, 'static', 'user_data', set.dir_name)
+                if os.path.isdir(dirName):
+                    shutil.rmtree(dirName)
+                db.session.delete(set)
+
             db.session.commit()
             return redirect(url_for('session', session_id=session))
         elif request.form["typeToDelete"] == "Set":
@@ -444,6 +458,7 @@ def analyser2D(type, id):
     selTopics = {}
     topics = {}
     ids = id
+    gpsAvail = 0
 
     if type == "set":
         set = Set.query.filter_by(id=ids).first()
@@ -455,7 +470,6 @@ def analyser2D(type, id):
 
         i=0
         for id in namesDict.keys():
-            print(f"id: {id}")
             for top in namesDict[id].keys():
                 if top in def_topics:
                     selTopics[top] = True
@@ -468,8 +482,6 @@ def analyser2D(type, id):
                 else:
                     selTopics[top] = False
             i = 0
-
-        print(f"id: {ids}")
 
         sett = Set.query.filter_by(id=ids).first()
 
@@ -489,17 +501,18 @@ def analyser2D(type, id):
         fileName = log.file_name
         dirName = os.path.join(app.root_path, 'static', 'user_data', log.dir_name)
         (topList, fName) = getFileList(fileName, dirName)
+
+        if "vehicle_gps_position_0" in topList:
+            gpsAvail = log.defGPSCheck
+            print("gps Available")
+
         (namesDict, timeStamp, timeUtc) = reader.readDataNames(log.id, dirName, fName, def_topics)
-        if timeUtc == ['00:00:00', '00:00:00']:
-            timeSE = timeStamp
-        else:
-            timeSE = timeUtc
+
+        timeSE = timeStamp + timeUtc
 
         topics = {str(log.id): namesDict}
 
-    print(f"topics: {topics}")
-    print(f"set: {log_ids}")
-    return render_template("analyser2D.html", session=session_id, topics=topics, set=log_ids, type=type, id=ids, timeSE=timeSE, setIds=json.dumps(log_ids))
+    return render_template("analyser2D.html", session=session_id, topics=topics, set=log_ids, type=type, id=ids, timeSE=timeSE, setIds=json.dumps(log_ids), gpsAvail=gpsAvail)
 
 @app.route('/saveTopics', methods = ['POST'])
 def saveTopics():
@@ -512,12 +525,17 @@ def saveTopics():
         db.session.commit()
     else:
         set = Set.query.filter_by(id=topics["id"]).first()
+        gpsSetting = set.defGPSCheck
         dirName = os.path.join(app.root_path, 'static', 'user_data', set.dir_name)
         lg_ids = []
         for log in set.log:
             lg_ids.append(log.id)
         topic_list = topics["checkTopics"]
-        mergedData = readAndMergeData(lg_ids, topic_list)
+        if (len(lg_ids) == 0) or (len(topic_list) == 0):
+            print("Nothing selected. No changes have been made.")
+            return jsonify(url_for('analyser2D', type=topics["type"], id=topics["id"]))
+
+        mergedData = readAndMergeData(lg_ids, topic_list, gpsSetting)
         plugin = Plugins()
         plugin.addToMultipleLogs(mergedData, dirName, lg_ids)
         set.def_topics = json.dumps(topic_list)
@@ -534,19 +552,27 @@ def get_post_javascript_data():
     selections = request.get_json()
     reader = DataReader()
     ids = dict(selections["set_id"])
+    xAxTime = selections["xAxTime"]
 
     if ids["type"] == "log":
         log = Log.query.filter_by(id=ids["id"]).first()
+        log.defGPSCheck = 1 if xAxTime else 2
+        db.session.commit()
         fileName = log.file_name
         dirName = os.path.join(app.root_path, 'static', 'user_data', log.dir_name)
         def_topics = json.loads(log.def_topics)
-        data = reader.readDataFromDir(log.id, dirName, fileName, def_topics)
+
+        data = reader.readDataFromDir(log.id, dirName, fileName, def_topics, xAxTime)
 
     else:
         set = Set.query.filter_by(id=ids["id"]).first()
         dirName = os.path.join(app.root_path, 'static', 'user_data', set.dir_name)
         filename = dirName + '/' + 'merged.csv'
         data = pd.read_csv(filename)
+
+    if data.empty:
+        print("Empty DataSet, Plot canceled.")
+        return jsonify(success=True)
 
     #FILTER
     filteredData = reader.selectedFilter(selections["filters"], data)
@@ -569,13 +595,18 @@ def chart3D():
     selections = request.get_json()
     reader = DataReader()
     ids = dict(selections["set_id"])
+    xAxTime = selections["xAxTime"]
+
 
     if ids["type"] == "log":
         log = Log.query.filter_by(id=ids["id"]).first()
         fileName = log.file_name
+        log.defGPSCheck = 1 if xAxTime else 2
+        db.session.commit()
         dirName = os.path.join(app.root_path, 'static', 'user_data', log.dir_name)
         def_topics = json.loads(log.def_topics)
-        data = reader.readDataFromDir(log.id, dirName, fileName, def_topics)
+
+        data = reader.readDataFromDir(log.id, dirName, fileName, def_topics, xAxTime)
 
     else:
         set = Set.query.filter_by(id=ids["id"]).first()
@@ -594,7 +625,15 @@ def chart3D():
     # Select observations between two datetimes
     filteredData = filteredData[filteredData['timestamp'].between('{}.00'.format(selections["timeSEList"][0]), '{}.00'.format(selections["timeSEList"][1]))]
 
-    axRg = selections["axisRange"]
+    dataLen = len (filteredData)
+    if dataLen == 0:
+        print("Filtered Dataset is empty!")
+        resp = jsonify(success=True)
+        return resp
+    elif (selections["X"] == []) or (selections["Y"] == []) or (selections["Z"] == []):
+        print("One or more Parameters are not selected!")
+        resp = jsonify(success=True)
+        return resp
 
     curr_project = current_user.get_id()
     setting = Settings.query.filter_by(project_id=curr_project).first()
@@ -675,9 +714,13 @@ def createSetDir():
     print("Directory created at {}".format(random_hex))
     return random_hex
 
-def readAndMergeData(log_id_list, def_topics):
+def readAndMergeData(log_id_list, def_topics, syncOnGPS):
     reader = DataReader()
     allDataSet = []
+    minTime = []
+    maxTime = []
+    lenOfData = []
+
 
     for lg in log_id_list:
         log = Log.query.filter_by(id=lg).first()
@@ -685,12 +728,34 @@ def readAndMergeData(log_id_list, def_topics):
         dirName = os.path.join(app.root_path, 'static', 'user_data', log.dir_name)
         (topList, fName) = getFileList(fileName, dirName)  # returns list of topic-names and filename (without .csv)
         lst = [x for x in def_topics if x in topList]
-        allDataSet.append(reader.readDataFromDir(log.id, dirName, fName, lst))
+        dirData = reader.readDataFromDir(log.id, dirName, fName, lst, syncOnGPS)
+        allDataSet.append(dirData)
+
+        minTime.append(dirData['timestamp'].iloc[0])
+        maxTime.append(dirData['timestamp'].iloc[-1])
+        lenOfData.append(len(dirData))
+
 
     mergedData = allDataSet[0]
+
+    #find the smallest time step in first dataset
+    l1 = mergedData["timestamp"][1:].reset_index()
+    l2 = mergedData["timestamp"][:-1].reset_index()
+    steps = l1 - l2
+    steps = steps.sort_values(by=["timestamp"])
+    minStep = steps["timestamp"][int(len(steps)/100)]
+
+    miTime = min(minTime)
+    maTime = max(maxTime)
+
+    dfTime = pd.DataFrame(pd.date_range(start=miTime, end=maTime, freq=minStep),columns=["timestamp"])
+    mergedData = pd.merge_asof(left=dfTime, right=mergedData, on='timestamp', direction='nearest',
+                  tolerance=pd.Timedelta('500ms'))
+
     for i in range(len(allDataSet) - 1):
         mergedData = pd.merge_asof(left=mergedData, right=allDataSet[i + 1], on='timestamp', direction='nearest',
                                    tolerance=pd.Timedelta('500ms'))
+
     print("Set data has been merged")
     print(f"Set Timestamp Range: {mergedData['timestamp'].iloc[0]} - {mergedData['timestamp'].iloc[-1]}")
 
