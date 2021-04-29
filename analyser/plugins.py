@@ -112,7 +112,7 @@ class Plugins:
 
                 data[name + 'x__-__calculated'] = x1
                 data[name + 'y__-__calculated'] = y1
-                data[name + 'z__-__calculated'] = z1
+                data[name + 'z__-__calculated'] = np.negative(z1)
 
             print('lat lon to XYZ conversion completed')
 
@@ -124,7 +124,6 @@ class Plugins:
         latitude is the 90deg - zenith angle in range [-90;90]
         lonitude is the azimuthal angle in range [-180;180]
         """
-        # print('lat: {}, lon: {}'.format(lat, lon))
 
         r = 6371 + (alt * 0.001)
         theta = math.radians(lat)
@@ -134,8 +133,6 @@ class Plugins:
         z = ((r * math.sin(theta)) - 4789.5) * 1000
 
         x, y, z = self.rotate3D(x, y, z, math.radians(8.92), math.radians(-41.26), math.radians(0))
-
-        # print('lat: {}, lon: {}, r: {}, x: {}, y: {}, z: {}'.format(lat, lon, r, x,y,z))
 
         return x, y, z
 
@@ -245,7 +242,7 @@ class Plugins:
             mData = pd.merge_asof(left=mData, right=data[i + 1], on='dateTime', direction='nearest',
                                   tolerance=pd.Timedelta('50ms'))
 
-        mData.drop(columns=['dateTime'])
+        mData.drop(columns=['dateTime'], inplace=True)
         mData['timestamp'] = timestamp
 
         # Saving
