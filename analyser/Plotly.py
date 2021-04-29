@@ -52,8 +52,9 @@ class Plotly:
                 else:
                     yData = dataSet[lSel]
 
+                nameList = lSel.split("__-__")
                 fig.add_trace(go.Scatter(x=timeStamp, y=yData,
-                                         name=lSel.split("__-__")[1]), secondary_y=False)
+                                         name=str(nameList[0] + "_" + nameList[1])), secondary_y=False)
 
         for rSel in rightSelected:
             if rSel:
@@ -64,8 +65,9 @@ class Plotly:
                 else:
                     yData = dataSet[rSel]
 
+                nameList = rSel.split("__-__")
                 fig.add_trace(go.Scatter(x=timeStamp, y=yData,
-                                         name=rSel.split("__-__")[1]), secondary_y=True)
+                                         name=str(nameList[0] + "_" + nameList[1])), secondary_y=True)
 
         if axRange[0]:
             fig.update_yaxes(range=[axRange[0], axRange[1]], secondary_y=False)
@@ -93,24 +95,21 @@ class Plotly:
     def draw3D(self, dataSet, x, y, z, c, theme):
 
         print('creating 3D plot...')
-        for key in dataSet.keys():
-            print(key)
 
         tracks = []
         for i in range(len(x)):
 
             if c[i] != '':
-                print(c)
                 tracks.append(go.Scatter3d(x=dataSet[x[i]], y=dataSet[y[i]],
                                            z=dataSet[z[i]], line_color=dataSet[c[i]],
                                            text=["Time: {}".format(x) for x in dataSet['timestamp']],
-                                           marker=dict(size=2, color=dataSet[c[i]],
+                                           marker=dict(size=1, color=dataSet[c[i]],
                                                        colorbar=dict(y=0.1, len=0.8), colorscale="Viridis")))
 
             else:
                 tracks.append(go.Scatter3d(x=dataSet[x[i]], y=dataSet[y[i]],
                                            z=dataSet[z[i]], text=["Time: {}".format(x) for x in dataSet['timestamp']],
-                                           marker=dict(size=2)))
+                                           marker=dict(size=1)))
 
         fig = go.Figure(data=tracks)
 
@@ -185,7 +184,7 @@ class Plotly:
         data = [go.Scatter3d(
             visible=False,
             mode='markers',
-            marker=dict(size=4, color=giveColor(step), colorscale=[[1, 'red'], [0, 'blue']]),
+            marker=dict(size=2, color=giveColor(step), colorscale=[[1, 'red'], [0, 'blue']]),
             # name = str(time[step]),
             x=combineData(xx, step),
             y=combineData(yy, step),
@@ -228,5 +227,6 @@ class Plotly:
                           scene_aspectmode='manual', scene_aspectratio=dict(x=aspectX, y=aspectY, z=aspectZ))
 
         print('red: 1 dataSet')
+        print('plotting...')
 
         plot(fig, auto_open=True)
