@@ -23,8 +23,8 @@
 
       <!-- ANALYSER 2D -->
       <div class="analyser2D">
-        <div class="row">
-          <div class="col-6">
+        <div class="container">
+
 
             <ul class="list-group">
               <li class="list-group-item bg-transparent" style="border-radius: 0px; border-color: #272727; padding: 0px;">
@@ -32,8 +32,7 @@
                   <table class="table table-borderless table-dark bg-transparent" id="tableLeft">
                     <thead>
                       <tr>
-                        <th scope="col" style="display:none">id</th>
-                        <th scope="col" colspan="2">
+                        <th scope="col" colspan="3">
                           <div class="row">
                             <div class="col-6">
                               <h6>Left Axis</h6>
@@ -84,18 +83,19 @@
                 </form>
               </li>
             </ul>
-          </div>
 
-          <div class="col-6">
+
+
     <!-- RIGHT SIDE -->
+
+    <hr style='margin-top: 0' />
     <ul class="list-group">
       <li class="list-group-item bg-transparent" style="border-radius: 0px; border-color: #272727; padding: 0px;">
             <div class="card">
               <table class="table table-borderless table-dark bg-transparent" id="tableRight">
                 <thead>
                   <tr>
-                    <th scope="col" style="display:none">id</th>
-                    <th scope="col" colspan="2">
+                    <th scope="col" colspan="3">
                       <div class="row">
                         <div class="col-6">
                           <h6>Right Axis</h6>
@@ -147,7 +147,25 @@
           </li>
         </ul>
           </div>
-        </div>
+
+        {% if gpsAvail > 0 %}
+          {% if gpsAvail == 1 %}
+          <div class="container">
+            <input type='checkbox' id="xAxTime" checked>&nbsp;&nbsp;
+            <label style="color: #0275d8;">Use GPS Time for X Axis</label>
+          </div>
+          {% else %}
+          <div class="container">
+            <input type='checkbox' id="xAxTime">&nbsp;&nbsp;
+            <label style="color: #0275d8;">Use GPS Time for X Axis</label>
+          </div>
+          {% endif %}
+        {% else %}
+          <div class="container" hidden>
+            <input type='checkbox' id="xAxTime">&nbsp;&nbsp;
+            <label style="color: #0275d8;">Use GPS Time for X Axis</label>
+          </div>
+        {% endif %}
         <button class="btn btn-outline-success btn-block" type="button" name="button" id="sendData" style="border-color: #0275d8; color: white;">Create</button>
       </div>
 
@@ -278,13 +296,22 @@
               </div>
           </li>
 
-
         <div class="input-group input-group-sm mt-3">
           <div class="input-group-prepend">
             <span class="input-group-text ">Time</span>
           </div>
-          <input type="text" class="form-control text-center" placeholder="Start {{ timeSE[0] }}" id="startTime" data-start="{{ timeSE[0] }}">
-          <input type="text" class="form-control text-center" placeholder="End {{ timeSE[1] }}" id="endTime" data-end="{{ timeSE[1] }}">
+          {% if gpsAvail > 0 %}
+            {% if gpsAvail == 1 %}
+            <input type="text" class="form-control text-center" placeholder="Start {{ timeSE[2] }}" id="startTime" data-start="{{ timeSE[2] }}">
+            <input type="text" class="form-control text-center" placeholder="End {{ timeSE[3] }}" id="endTime" data-end="{{ timeSE[3] }}">
+            {% else %}
+            <input type="text" class="form-control text-center" placeholder="Start {{ timeSE[0] }}" id="startTime" data-start="{{ timeSE[0] }}">
+            <input type="text" class="form-control text-center" placeholder="End {{ timeSE[1] }}" id="endTime" data-end="{{ timeSE[1] }}">
+            {% endif %}
+          {% else %}
+            <input type="text" class="form-control text-center" placeholder="Start {{ timeSE[0] }}" id="startTime" data-start="{{ timeSE[0] }}">
+            <input type="text" class="form-control text-center" placeholder="End {{ timeSE[1] }}" id="endTime" data-end="{{ timeSE[1] }}">
+          {% endif %}
         </div>
         <div class="input-group input-group-sm mt-3">
           <div class="input-group-prepend">
@@ -292,12 +319,33 @@
           </div>
           <input type="text" class="form-control text-center" placeholder="3000" id="tail3D">
         </div>
+
+        <div class="row mt-3"></div>
+        {% if gpsAvail > 0 %}
+          {% if gpsAvail == 1 %}
+          <div class="container">
+            <input type='checkbox' id="xAxTime3D" checked>&nbsp;&nbsp;
+            <label style="color: #0275d8;">Use GPS Time</label>
+          </div>
+          {% else %}
+          <div class="container">
+            <input type='checkbox' id="xAxTime3D">&nbsp;&nbsp;
+            <label style="color: #0275d8;">Use GPS Time</label>
+          </div>
+          {% endif %}
+        {% else %}
+          <div class="container" hidden>
+            <input type='checkbox' id="xAxTime3D">&nbsp;&nbsp;
+            <label style="color: #0275d8;">Use GPS Time</label>
+          </div>
+        {% endif %}
+
         <div class="row">
           <div class="col-6">
             <button class="btn btn-outline-warning btn-block mt-3" type="button" name="button" id="simulate3DData" style="border-color: #0275d8; color: white;">Simulate</button>
           </div>
           <div class="col-6">
-            <button class="btn btn-outline-success btn-block mt-3" type="button" name="button" id="send3DData" style="border-color: #0275d8; color: white;">Create Chart</button>
+            <button class="btn btn-outline-success btn-block mt-3" type="button" name="button" time0="{{ timeSE[0] }}" time1="{{ timeSE[1] }}" time2="{{ timeSE[2] }}" time3="{{ timeSE[3] }}" id="send3DData" style="border-color: #0275d8; color: white;">Create Chart</button>
           </div>
         </div>
       </div>
