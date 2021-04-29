@@ -225,7 +225,7 @@ var topicLeft = "data";
 var setLeft = "set";
 $(".addLeftButton").click(function () {
     var text = $('#inputParameterSelectLeft option:selected').text();
-    $('#tableLeft tbody').append("<tr><td style='display:none'>" + topicLeft + "</td><td>" + setLeft + "</td><td>" + text +
+    $('#tableLeft tbody').append("<tr><td>" + setLeft + "</td><td>" + topicLeft + "</td><td>" + text +
     "<button type='button' class='btn btn-sm float-right' id='deleteLeftRow' style='border: 0px; color: white;'><i class='fa fa-times'></i></button>" +
     "</td></tr>");
 });
@@ -274,7 +274,7 @@ var topicRight = "data";
 var setRight = "set";
 $(".addRightButton").click(function () {
     var text = $('#inputParameterSelectRight option:selected').text();
-    $('#tableRight tbody').append("<tr><td style='display:none'>" + topicRight + "</td><td>" + setRight + "</td><td>" + text +
+    $('#tableRight tbody').append("<tr><td>" + setRight + "</td><td>" + topicRight + "</td><td>" + text +
     "<button type='button' class='btn btn-sm float-right' id='deleteRightRow' style='border: 0px; color: white;'><i class='fa fa-times'></i></button>" +
     "</td></tr>");
 });
@@ -528,7 +528,7 @@ $("#sendData").click(function() {
       tr.push($(this).text());
     })
     console.log(tr);
-    name = setRight + "__-__" + tr[2] + "__-__" + tr[0];
+    name = tr[0] + "__-__" + tr[2] + "__-__" + tr[1];
     console.log(name)
     tableRight.push(name)
   })
@@ -540,10 +540,12 @@ $("#sendData").click(function() {
       tr.push($(this).text());
     })
     console.log(tr);
-    name = setLeft + "__-__" + tr[2] + "__-__" + tr[0];
+    name = tr[0] + "__-__" + tr[2] + "__-__" + tr[1];
     console.log(name)
     tableLeft.push(name)
   })
+
+  var xAxTime = $("#xAxTime").is(":checked");
 
   var filters = {"filters": ["fil1","fil2","fil3","fil4"], "options":["1","0","-1","off"], "topics": {"fil1": [topicFilter1, setFilter1], "fil2": [topicFilter2, setFilter2], "fil3": [topicFilter3, setFilter3], "fil4": [topicFilter4,setFilter4]}}
   var filterDict = {}
@@ -564,12 +566,10 @@ $("#sendData").click(function() {
   rgLeft = [$("#rangeFromLeft").val(),$('#rangeToLeft').val()]
   rgRight = [$("#rangeFromRight").val(),$('#rangeToRight').val()]
 
-  var selectedData = {"left": tableLeft, "right": tableRight, "set_id":set_id, "filters": filterDict, "axisRange": {"left":rgLeft,"right":rgRight}}
+  var selectedData = {"left": tableLeft, "right": tableRight, "set_id":set_id, "filters": filterDict, "axisRange": {"left":rgLeft,"right":rgRight}, "xAxTime": xAxTime}
   console.log("Send!")
+  console.log(selectedData)
 
-  //$.post( "/postmethod", {
-  //  javascript_data: JSON.stringify(selectedData)
-  //});
 
   $.ajax({
   type: 'POST',
@@ -603,6 +603,13 @@ $('#commitSetButton').click(function(){
       topix = JSON.parse(topix)
       $("#topicsOfSettTable tbody").empty();
 
+      gpsForSync = topix.hasOwnProperty("vehicle_gps_position_0")
+      console.log(gpsForSync)
+      if (gpsForSync) {
+        $("#syncTimeGPSCont").attr("hidden", false);
+        $("#syncTimeGPScheck").prop("checked", true);
+      }
+
       var keys = Object.keys(topix)
       console.log(keys)
       $.each(keys, function(index, value) {
@@ -631,7 +638,9 @@ $('#createSetButton').click(function(){
           return $(this).closest('tr').find('td:nth-child(1)').text();
     }).get();
 
-    setDict = {"logs": arr, "tops": tops, "title": $('#setTitle').val(), "notes": $('#setNotes').val()};
+    var syncOnGPS = $("#syncTimeGPScheck").is(":checked");
+
+    setDict = {"logs": arr, "tops": tops, "title": $('#setTitle').val(), "notes": $('#setNotes').val(), "syncOnGPS": syncOnGPS};
     session = $('#LogsForSetTable').attr('data-session_id');
     console.log(session)
     $.ajax({
