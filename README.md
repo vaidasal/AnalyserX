@@ -39,7 +39,7 @@ On the left side you can create new test sessions. In the middle you can add tas
 <img width="1348" alt="Screenshot 2021-03-05 at 14 00 18" src="https://user-images.githubusercontent.com/51539520/110147108-92d9f700-7ddb-11eb-9194-4324c5c9efce.png">
 
 # Set
-If you have multiple logs, made at the same time, you can create a set of them. These logs will be synchronised by time. In this way you will be able to view all of them in one plot. Time synchronisation is based on parameter 'vehicle_gps_position_0'. It's therefore advised to select this parameter when creating a new set. Otherwise syncronisation will be based on timestamp.
+If you have multiple logs, made at the same time, you can create a set of them. These logs will be synchronised by time. In this way you will be able to view all of them in one plot. Time synchronisation is based on parameter 'vehicle_gps_position_0' (by default) or 'timestamp' (checkbox deselected).
 <img width="1348" alt="Screenshot 2021-03-05 at 15 04 09" src="https://user-images.githubusercontent.com/51539520/110147317-d2084800-7ddb-11eb-8f22-0056feecbdca.png">
 
 # Visualisation
@@ -58,7 +58,7 @@ On the left side you can select parameters for left and right axis. You have to 
 <img width="978" alt="Screenshot 2021-03-05 at 15 15 57" src="https://user-images.githubusercontent.com/51539520/110150985-31685700-7de0-11eb-8c9a-22891574a183.png">
 
 # Time Synchronisation
-AnalyserX looks for 'vehicle_gps_position_0' for gps time with timestamp synchronisation. It's calculated only when creating a set. In order to see gps time on x-Axes, a set (of one log) must be created. 
+AnalyserX looks for 'vehicle_gps_position_0' for gps time with timestamp synchronisation. It's calculated only when creating a set. In order to see gps time on x-Axes, a set (of one log) must be created. Synchronisation is based on pandas function merge_asof with direction nearest and tolerance of 500ms. At first, timestamp of the first selected dataset will be analysed in order to determine the shortest data sample period. Then the earliest starting time and the latest ending time for all selected logs will be saved. Syncronisation is then based on time series, that is created with these three parameters.
 
 # PDF Export
 It is possible to create a test session report in PDF. You can select, which information should be included.
@@ -66,7 +66,7 @@ It is possible to create a test session report in PDF. You can select, which inf
 <img width="594" alt="Screenshot 2021-03-05 at 18 28 37" src="https://user-images.githubusercontent.com/51539520/110151316-9fad1980-7de0-11eb-830e-905ba683c5b7.png">
 
 # Moving Files
-It should be possible to move AnalyserX to different locations on your file system. Links for files and data are relative.
+It is possible to move AnalyserX to different locations on your file system. Links for files and data are relative.
 
 # Disclaimer
 It is the first version of AnalyserX. It is not well tested so it might include bugs and other inefficiencies. Many of the functions are expecting certain parameter names. Default names should work with data set made by Pixhawk devices. I am open to improvements and suggestions.
