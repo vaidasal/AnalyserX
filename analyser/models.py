@@ -14,6 +14,12 @@ class Project(db.Model, UserMixin):
     session = db.relationship('Session', backref='author', lazy=True)
     settings = db.relationship('Settings', backref='author', lazy=True)
 
+    opt1 = db.Column(db.String(), nullable=True)
+    opt2 = db.Column(db.String(), nullable=True)
+    opt3 = db.Column(db.String(), nullable=True)
+    opt4 = db.Column(db.Integer(), nullable=True)
+    opt5 = db.Column(db.Integer(), nullable=True)
+
     def __repr__(self):
         return f"Project('{self.title}','{self.description}')"
 
@@ -25,6 +31,12 @@ class Session(db.Model):
     task = db.relationship('Task', backref='author', lazy=True)
     set = db.relationship('Set', backref='author', lazy=True)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
+
+    opt1 = db.Column(db.String(), nullable=True)
+    opt2 = db.Column(db.String(), nullable=True)
+    opt3 = db.Column(db.String(), nullable=True)
+    opt4 = db.Column(db.Integer(), nullable=True)
+    opt5 = db.Column(db.Integer(), nullable=True)
 
     def __repr__(self):
         return f"Session('{self.title}')"
@@ -38,7 +50,13 @@ class Log(db.Model):
     topic = db.relationship('Topics', backref='author', lazy=True)
     dir_name = db.Column(db.String())
     session_id = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False)
-    #set_id = db.Column(db.Integer, db.ForeignKey('set.id'), nullable=True)
+    defGPSCheck = db.Column(db.Integer)
+
+    opt1 = db.Column(db.String(), nullable=True)
+    opt2 = db.Column(db.String(), nullable=True)
+    opt3 = db.Column(db.String(), nullable=True)
+    opt4 = db.Column(db.Integer(), nullable=True)
+    opt5 = db.Column(db.Integer(), nullable=True)
 
     def __repr__(self):
         return f"{self.id}"
@@ -48,6 +66,12 @@ class Task(db.Model):
     title = db.Column(db.String(), nullable=False)
     result = db.Column(db.String(), nullable=True)
     session_id = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False)
+
+    opt1 = db.Column(db.String(), nullable=True)
+    opt2 = db.Column(db.String(), nullable=True)
+    opt3 = db.Column(db.String(), nullable=True)
+    opt4 = db.Column(db.Integer(), nullable=True)
+    opt5 = db.Column(db.Integer(), nullable=True)
 
     def __repr__(self):
         return f"Task('{self.title}')"
@@ -65,6 +89,13 @@ class Set(db.Model):
     def_topics = db.Column(db.String())
     log = db.relationship('Log', backref='logAuthor', secondary=association_set_log)
     session_id = db.Column(db.Integer, db.ForeignKey('session.id'), nullable=False)
+    defGPSCheck = db.Column(db.Integer)
+
+    opt1 = db.Column(db.String(), nullable=True)
+    opt2 = db.Column(db.String(), nullable=True)
+    opt3 = db.Column(db.String(), nullable=True)
+    opt4 = db.Column(db.Integer(), nullable=True)
+    opt5 = db.Column(db.Integer(), nullable=True)
 
     def __repr__(self):
         return f"Set('{self.title}')"
@@ -75,6 +106,12 @@ class Settings(db.Model):
     topics = db.Column(db.String())
     color_theme = db.Column(db.String(), default="dark")
 
+    opt1 = db.Column(db.String(), nullable=True)
+    opt2 = db.Column(db.String(), nullable=True)
+    opt3 = db.Column(db.String(), nullable=True)
+    opt4 = db.Column(db.Integer(), nullable=True)
+    opt5 = db.Column(db.Integer(), nullable=True)
+
     def __repr__(self):
         return f"Settings('{self.id}')"
 
@@ -82,6 +119,12 @@ class Topics(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     log_id = db.Column(db.Integer, db.ForeignKey('log.id'), nullable=False)
     topic_name = db.Column(db.String(), nullable=False)
+
+    opt1 = db.Column(db.String(), nullable=True)
+    opt2 = db.Column(db.String(), nullable=True)
+    opt3 = db.Column(db.String(), nullable=True)
+    opt4 = db.Column(db.Integer(), nullable=True)
+    opt5 = db.Column(db.Integer(), nullable=True)
 
     def __repr__(self):
         return f"Topics('{self.topic_name}')"
