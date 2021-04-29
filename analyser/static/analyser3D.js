@@ -229,8 +229,9 @@ $("#simulate3DData").click(function() {
   rgLeft = [$("#rangeFromLeft").val(),$('#rangeToLeft').val()]
   rgRight = [$("#rangeFromRight").val(),$('#rangeToRight').val()]
 
-  var selectedData = {"X": tableX, "Y": tableY, "Z": tableZ, "Color": tableC, "timeSEList": timeSE, "action": "Sim", "tail": tail, "set_id":set_id, "filters": filterDict, "axisRange": {"left":rgLeft,"right":rgRight}}
-  console.log(selectedData)
+  var xAxTime = $("#xAxTime3D").is(":checked");
+
+  var selectedData = {"X": tableX, "Y": tableY, "Z": tableZ, "Color": tableC, "timeSEList": timeSE, "action": "Sim", "tail": tail, "set_id":set_id, "filters": filterDict, "axisRange": {"left":rgLeft,"right":rgRight}, "xAxTime": xAxTime}
 
   $.ajax({
   type: 'POST',
@@ -242,6 +243,29 @@ $("#simulate3DData").click(function() {
       $('#loadingChartModal').modal('hide');
   }});
 
+})
+
+$("#xAxTime3D").click(function() {
+  var xAxSet = $("#xAxTime3D").is(":checked");
+  var time0 = $("#send3DData").attr("time0");
+  var time1 = $("#send3DData").attr("time1");
+  var time2 = $("#send3DData").attr("time2");
+  var time3 = $("#send3DData").attr("time3");
+  if (xAxSet) {
+    $("#startTime").attr("placeholder", "Start " + time2);
+    $("#endTime").attr("placeholder", "End " + time3);
+    $("#startTime").attr("data-start", time2);
+    $("#endTime").attr("data-end", time3);
+    $("#startTime").val("");
+    $("#endTime").val("");
+  } else {
+    $("#startTime").attr("placeholder", "Start " + time0);
+    $("#endTime").attr("placeholder", "End " + time1);
+    $("#startTime").attr("data-start", time0);
+    $("#endTime").attr("data-end", time1);
+    $("#startTime").val("");
+    $("#endTime").val("");
+  }
 })
 
 
@@ -305,7 +329,9 @@ $("#send3DData").click(function() {
   rgLeft = [$("#rangeFromLeft").val(),$('#rangeToLeft').val()]
   rgRight = [$("#rangeFromRight").val(),$('#rangeToRight').val()]
 
-  var selectedData = {"X": tableX, "Y": tableY, "Z": tableZ, "Color": tableC, "timeSEList": timeSE, "action": "Chart", "tail": tail, "set_id":set_id, "filters": filterDict, "axisRange": {"left":rgLeft,"right":rgRight}}
+  var xAxTime = $("#xAxTime3D").is(":checked");
+
+  var selectedData = {"X": tableX, "Y": tableY, "Z": tableZ, "Color": tableC, "timeSEList": timeSE, "action": "Chart", "tail": tail, "set_id":set_id, "filters": filterDict, "axisRange": {"left":rgLeft,"right":rgRight}, "xAxTime": xAxTime}
   console.log(selectedData)
 
   $.ajax({
