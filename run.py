@@ -1,6 +1,6 @@
 from analyser import app
 
 if __name__ == "__main__":
-    app.run(port=48734, use_reloader=False)
+    app.run(use_reloader=False, host="0.0.0.0")
     print("run")
 
