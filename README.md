@@ -68,7 +68,7 @@ It is possible to create a test session report in PDF. You can select, which inf
 # Moving Files
 It is possible to move AnalyserX to different locations on your file system. Links for files and data are relative.
 
-# Docker compatible
+# Docker
 For use with docker simply run "docker-compose up" in terminal. Be aware, that all the Data you add to Analyser will be saved to the Container and will not be accessible from your file system. This means, that your Data will be lost if you delete the container. At the moment there are no possibilities to export or import Data, therefore it is adviced to use Docker only for test purposes.
 
 # Disclaimer
