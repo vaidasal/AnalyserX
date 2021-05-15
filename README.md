@@ -1,31 +1,42 @@
 # AnalyserX
 Data Visualisation and Management Tool for .ulg Files
 
-AnalyserX is primarily made for engineers working with UAVs. You can create a database for all your test sessions, visualise your test results and export reports as PDF for archiving or sharing. It is possible to synchronise several logs on GPS time and visualise results in 2D or 3D. You can choose to view all the points in 3D plot together or view them changing in time (controlled with slider). It is open for easy customisation over plugings.py file.
+AnalyserX is primarily made for engineers working with UAVs. You can create a database for all your test sessions, visualise your test results and export reports as PDF for archiving or sharing. It is possible to synchronise several logs on GPS time and visualise results in 2D or 3D. You can choose to view all the points in 3D plot together or view them changing in time (controlled with slider). It is open for easy customisation over plugins.py file.
 
 # Filetypes
-The only file type, that can be imported at the moment is .ulg. The file will be then converted (with pyulog) to multiple .csv files and saved to user_data folder. All further functionality of AnalyserX will only use those .csv files. This means, that .csv file support as import filetype could be added with some minor modifications. 
+The only file type, that can be imported at the moment is .ulg. The file will be then converted (with pyulog) to multiple .csv files and saved to user_data folder. All further functionality of AnalyserX will only use those .csv files.
 
 # GUI
-Analyser runs as a local server application. Its based on Flask. This means it is possible to make it available online as a Website. It was developed using Chrome. On other browsers some of the elements are not displayed correctly. 
+Analyser runs as a local server application. Its based on Flask. This means it is possible to make it available online as a Website.
 
 # Starting
-AnalyserX requires following Modules:
-flask,
-Flask-SQLAlchemy,
-flask-login,
-flask-wtf,
-geopy,
-squaternion,
-fpdf...
-
 to start run: python run.py
-then open http://127.0.0.1:48734/ in your browser (you can change the port in run.py).
+then open http://0.0.0.0:5000/ in your browser.
+
+AnalyserX requires following Modules:
+Flask==1.1.2
+Flask-Login==0.5.0
+Flask-SQLAlchemy==2.4.4
+Flask-WTF==0.14.3
+fpdf==1.7.2
+geopy==2.0.0
+Jinja2==2.11.2
+numpy==1.19.4
+pandas==1.1.5
+plotly==4.14.3
+pyulog==0.8.0
+SQLAlchemy==1.3.20
+squaternion==0.3.2
+attrs==21.1.0
+WTForms==2.3.3
+
+# Docker
+Alternatively you can use AnalyserX over Docker. To create a container run in terminal "docker-compose up". After that you will be able to start analyser by simply pressing play button in docker dashboard.
 
 <img width="1345" alt="Screenshot 2021-03-05 at 13 34 56" src="https://user-images.githubusercontent.com/51539520/110128922-9c596400-7dc7-11eb-9166-b60ed4173c92.png">
 
 # Plugins
-It is possible to calculate special parameters for your use case when importing .ulg files or creating a set by synchronising two log files. Everytime, when a new log or set is added, AnalyserX will look at plugins.py file to see if there are functions, that could be applied for current dataset. Just by editing plugins.py file you can add custom functionality or make changes on imported log files.
+It is possible to calculate special parameters for your use case when importing .ulg files or creating a set by synchronising two log files. Everytime, when a new log or set is added, AnalyserX will look at plugins.py file to see if there are functions, that could be applied for current dataset. Just by editing plugins.py file you can add custom functionality or make changes on imported log files. After editing plugins.py you have to press refresh for every log or set to recalculate data.
 As default following parameters will be calculated: distance between two or more vehiches and Lat Lon to XYZ conversion (vehicle_global_position_0 needed), Euler angle (vehicle_attitude_0), ground speed (vehicle_global_position_0), vector length for acceleration (vehicle_local_position_0) and accelerometer (sensor_combined_0). These parameters will be added to log data as 'calculated' topic. If parameter names, needed for calculations, are not found, calculation will not be executed.
 
 # Create a new Project
@@ -39,7 +50,7 @@ On the left side you can create new test sessions. In the middle you can add tas
 <img width="1348" alt="Screenshot 2021-03-05 at 14 00 18" src="https://user-images.githubusercontent.com/51539520/110147108-92d9f700-7ddb-11eb-9194-4324c5c9efce.png">
 
 # Set
-If you have multiple logs, made at the same time, you can create a set of them. These logs will be synchronised by time. In this way you will be able to view all of them in one plot. Time synchronisation is based on parameter 'vehicle_gps_position_0' (by default) or 'timestamp' (checkbox deselected).
+If you have multiple logs, made at a similar time, you can create a set of them. In this way you will be able to view all of them in one plot. Time synchronisation is based on parameter 'vehicle_gps_position_0' (by default) or 'timestamp' (checkbox deselected).
 <img width="1348" alt="Screenshot 2021-03-05 at 15 04 09" src="https://user-images.githubusercontent.com/51539520/110147317-d2084800-7ddb-11eb-8f22-0056feecbdca.png">
 
 # Visualisation
@@ -58,7 +69,7 @@ On the left side you can select parameters for left and right axis. You have to 
 <img width="978" alt="Screenshot 2021-03-05 at 15 15 57" src="https://user-images.githubusercontent.com/51539520/110150985-31685700-7de0-11eb-8c9a-22891574a183.png">
 
 # Time Synchronisation
-AnalyserX looks for 'vehicle_gps_position_0' for gps time with timestamp synchronisation. It's calculated only when creating a set. In order to see gps time on x-Axes, a set (of one log) must be created. Synchronisation is based on pandas function merge_asof with direction nearest and tolerance of 500ms. At first, timestamp of the first selected dataset will be analysed in order to determine the shortest data sample period. Then the earliest starting time and the latest ending time for all selected logs will be saved. Syncronisation is then based on time series, that is created with these three parameters.
+AnalyserX looks for 'vehicle_gps_position_0' for gps time with timestamp synchronisation. It's calculated only when creating a set. Synchronisation is based on pandas function merge_asof with direction nearest and tolerance of 500ms. At first, timestamp of the first selected dataset will be analysed in order to determine the shortest data sample period. Then the earliest starting time and the latest ending time for all selected logs will be saved. Syncronisation is then based on time series, that is created with these three parameters.
 
 # PDF Export
 It is possible to create a test session report in PDF. You can select, which information should be included.
@@ -68,11 +79,11 @@ It is possible to create a test session report in PDF. You can select, which inf
 # Moving Files
 It is possible to move AnalyserX to different locations on your file system. Links for files and data are relative.
 
-# Docker
-For use with docker simply run "docker-compose up" in terminal. Be aware, that all the Data you add to Analyser will be saved to the Container and will not be accessible from your file system. This means, that your Data will be lost if you delete the container. At the moment there are no possibilities to export or import Data, therefore it is adviced to use Docker only for test purposes.
+# Backup
+You can make Backup files and then later import them back if needed. Its especially usefull when working with docker, because without backup deleting container would result in complete data loss.
 
 # Disclaimer
-It is the first version of AnalyserX. It is not well tested so it might include bugs and other inefficiencies. Many of the functions are expecting certain parameter names. Default names should work with data set made by Pixhawk devices. I am open to improvements and suggestions.
+It is still an early version of AnalyserX. It is not well tested so it might include bugs and other inefficiencies. Many of the functions are expecting certain parameter names. Default names should work with data set made by Pixhawk devices. I am open to improvements and suggestions.
 
 # Thank you
 In order to write this program I used a lot of help from different sources.
