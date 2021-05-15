@@ -24,7 +24,7 @@
       </div>
       <div class="form-group">
         <label class="form-control-label text-muted" for="SetNotes">Notes</label>
-        <textarea id="setNotes" name="setNotes" rows="10" class="form-control border-secondary form-control-lg", style="background-color: #272727;"></textarea>
+        <textarea id="setNotes" name="setNotes" rows="15" class="form-control border-secondary form-control-lg", style="background-color: #272727;"></textarea>
       </div>
 
       <div class="container" id="syncTimeGPSCont" hidden>
@@ -37,7 +37,7 @@
     <div class="col-3 mt-3">
       <div class="card"  style="height: 30rem;">
         <div class="overflow-auto">
-          <table class="table table-borderless table-dark bg-transparent" id="LogsForSetTable" data-session_id="{{ session_id }}">
+          <table class="table table-sm table-borderless table-dark bg-transparent" id="LogsForSetTable" data-session_id="{{ session_id }}">
             <thead>
               <tr>
                 <th scope="col" style="display:none">id</th>
@@ -64,7 +64,7 @@
     <div class="col-6 mt-3">
       <div class="card"  style="height: 30rem;">
         <div class="overflow-auto">
-          <table class="table table-borderless table-dark bg-transparent" id="topicsOfSettTable" data-settTopics="{{ settTopics }}" data-type="{{type}}" data-id="{{id}}">
+          <table class="table table-hover table-borderless table-sm table-dark bg-transparent" id="topicsOfSettTable" data-settTopics="{{ settTopics }}" data-type="{{type}}" data-id="{{id}}" style="padding: 10px;">
             <thead>
               <tr>
                 <th scope="col">Select Topics</th>
@@ -90,11 +90,5 @@
 </div>
 </div>
 </div>
-
-
-
-
-
-
 
 {% endblock %}
