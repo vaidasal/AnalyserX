@@ -24,6 +24,10 @@
       <!-- ANALYSER 2D -->
       <div class="analyser2D">
         <div class="mx-0">
+
+          {% if topics[set[0]] == {} %}
+            <p style="text-align:center; color:orange; font-size:10pt">You havent selected any topics yet. You can change this in the settings page above. Default topics can be set in the project settings page (dropdown menu in top right corner).</p>
+          {% endif %}
           <div class="row">
             <div class="col-xl">
               <ul class="list-group">
@@ -331,32 +335,38 @@
           <input type="text" class="form-control text-center" placeholder="3000" id="tail3D">
         </div>
 
-        <div class="row mt-3"></div>
-        {% if gpsAvail > 0 %}
-          {% if gpsAvail == 1 %}
-          <div class="container">
-            <input type='checkbox' id="xAxTime3D" checked>&nbsp;&nbsp;
-            <label style="color: #0275d8;">Use GPS Time</label>
+        <div class="row mt-3">
+          <div class="col-6">
+            {% if gpsAvail > 0 %}
+              {% if gpsAvail == 1 %}
+              <div class="container">
+                <input type='checkbox' id="xAxTime3D" checked>&nbsp;&nbsp;
+                <label style="color: #0275d8;">Use GPS Time</label>
+              </div>
+              {% else %}
+              <div class="container">
+                <input type='checkbox' id="xAxTime3D">&nbsp;&nbsp;
+                <label style="color: #0275d8;">Use GPS Time</label>
+              </div>
+              {% endif %}
+            {% else %}
+              <div class="container" hidden>
+                <input type='checkbox' id="xAxTime3D">&nbsp;&nbsp;
+                <label style="color: #0275d8;">Use GPS Time</label>
+              </div>
+            {% endif %}
           </div>
-          {% else %}
-          <div class="container">
-            <input type='checkbox' id="xAxTime3D">&nbsp;&nbsp;
-            <label style="color: #0275d8;">Use GPS Time</label>
-          </div>
-          {% endif %}
-        {% else %}
-          <div class="container" hidden>
-            <input type='checkbox' id="xAxTime3D">&nbsp;&nbsp;
-            <label style="color: #0275d8;">Use GPS Time</label>
-          </div>
-        {% endif %}
+            <div class="col-6 d-flex align-items-end justify-content-end mb-2">
+              <p style="text-align:right; color:grey; font-size:10pt; vertical-align:bottom; margin-bottom:0">If plot is not showing make sure, that pop-ups are allowed</p>
+            </div>
+        </div>
 
         <div class="row">
           <div class="col-6">
-            <button class="btn btn-outline-warning btn-block mt-3" type="button" name="button" id="simulate3DData" style="border-color: #0275d8; color: white;">Simulate</button>
+            <button class="btn btn-outline-warning btn-block mt-2" type="button" name="button" id="simulate3DData" style="border-color: #0275d8; color: white;">Simulate</button>
           </div>
           <div class="col-6">
-            <button class="btn btn-outline-success btn-block mt-3" type="button" name="button" time0="{{ timeSE[0] }}" time1="{{ timeSE[1] }}" time2="{{ timeSE[2] }}" time3="{{ timeSE[3] }}" id="send3DData" style="border-color: #0275d8; color: white;">Create Chart</button>
+            <button class="btn btn-outline-success btn-block mt-2" type="button" name="button" time0="{{ timeSE[0] }}" time1="{{ timeSE[1] }}" time2="{{ timeSE[2] }}" time3="{{ timeSE[3] }}" id="send3DData" style="border-color: #0275d8; color: white;">Create Chart</button>
           </div>
         </div>
       </div>
