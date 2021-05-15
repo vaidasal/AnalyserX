@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash, jsonify
+from flask import render_template, send_file, send_from_directory, request, redirect, url_for, flash, jsonify
 from analyser import app, db
 from analyser.forms import NewProjectForm, SelectProjectForm, AddSessionForm, AddLogForm
 from analyser.models import Project, Session, Log, Task, Set, Settings
@@ -79,7 +79,7 @@ def datasettings():
         fileName = log.file_name
         dirName = os.path.join(app.root_path, 'static', 'user_data', log.dir_name)
         (topList, fName) = getFileList(fileName, dirName)
-        (namesDict, _, _) = reader.readDataNames(log.id, dirName, fName, topList)
+        (namesDict, _, _) = reader.readDataNames(log.id, dirName, fName, topList, 0)
         for top in namesDict.keys():
             if top in def_topics:
                 selTopics[top] = True
@@ -275,6 +275,8 @@ def loadtopics():
     reader = DataReader()
     topArr = []
     topics = {}
+    if logs["logs"] == []:
+        return jsonify({'error': 'Select at least one log and press Commit again.'})
     for id in logs["logs"]:
         log = Log.query.filter_by(id=id).first()
         setting = Settings.query.filter_by(project_id=curr_project).first()
@@ -285,7 +287,7 @@ def loadtopics():
         fileName = log.file_name
         dirName = os.path.join(app.root_path, 'static', 'user_data', log.dir_name)
         (topList, fName) = getFileList(fileName, dirName)
-        (namesDict, _, _) = reader.readDataNames(log.id, dirName, fName, topList)
+        (namesDict, _, _) = reader.readDataNames(log.id, dirName, fName, topList, 0)
         for key in namesDict.keys():
             if key not in topArr:
                 topArr.append(key)
@@ -296,9 +298,7 @@ def loadtopics():
         else:
             topics[top] = False
 
-
-    resp = jsonify(topics)
-    return resp
+    return jsonify({'success':topics, 'error': 'false'})
 
 @app.route("/update/<session>", methods=["GET", "POST"])
 def update(session):
@@ -381,7 +381,6 @@ def delete(session):
             logout_user()
             db.session.delete(proj)
             db.session.commit()
-            flash('Project has been successfully deleted', 'success')
             return redirect(url_for('home'))
 
         if request.form["typeToDelete"] == "Task":
@@ -506,7 +505,7 @@ def analyser2D(type, id):
             gpsAvail = log.defGPSCheck
             print("gps Available")
 
-        (namesDict, timeStamp, timeUtc) = reader.readDataNames(log.id, dirName, fName, def_topics)
+        (namesDict, timeStamp, timeUtc) = reader.readDataNames(log.id, dirName, fName, def_topics, gpsAvail)
 
         timeSE = timeStamp + timeUtc
 
@@ -556,6 +555,8 @@ def get_post_javascript_data():
 
     if ids["type"] == "log":
         log = Log.query.filter_by(id=ids["id"]).first()
+        if log is None:
+            return jsonify({'error': 'Selected log doesnt exist anymore...'})
         log.defGPSCheck = 1 if xAxTime else 2
         db.session.commit()
         fileName = log.file_name
@@ -565,14 +566,17 @@ def get_post_javascript_data():
         data = reader.readDataFromDir(log.id, dirName, fileName, def_topics, xAxTime)
 
     else:
-        set = Set.query.filter_by(id=ids["id"]).first()
-        dirName = os.path.join(app.root_path, 'static', 'user_data', set.dir_name)
+        sett = Set.query.filter_by(id=ids["id"]).first()
+        if sett is None:
+            return jsonify({'error': 'Selected set doesnt exist anymore...'})
+        dirName = os.path.join(app.root_path, 'static', 'user_data', sett.dir_name)
         filename = dirName + '/' + 'merged.csv'
         data = pd.read_csv(filename)
 
     if data.empty:
-        print("Empty DataSet, Plot canceled.")
-        return jsonify(success=True)
+        return jsonify({'error': 'Selected data set is empty. Try readjusting the filters...'})
+    elif (selections["left"] == []) and (selections["right"] == []):
+        return jsonify({'error': 'No parameters were selected. Add at least one parameter to the table...'})
 
     #FILTER
     filteredData = reader.selectedFilter(selections["filters"], data)
@@ -584,9 +588,8 @@ def get_post_javascript_data():
     theme = "light" if setting.color_theme == "light" else "dark"
 
     plotly = Plotly()
-    plotly.draw2D(filteredData, selections["left"], selections["right"], [axRg["left"][0],axRg["left"][1],axRg["right"][0],axRg["right"][1]], theme)
-
-    resp = jsonify(success=True)
+    htmlFile = plotly.draw2D(filteredData, selections["left"], selections["right"], [axRg["left"][0],axRg["left"][1],axRg["right"][0],axRg["right"][1]], theme)
+    resp = jsonify({'success':htmlFile, 'error': 'false'})
     return resp
 
 @app.route('/chart3D', methods=['POST'])
@@ -594,6 +597,7 @@ def chart3D():
     print("chart3D")
     selections = request.get_json()
     reader = DataReader()
+    print(selections)
     ids = dict(selections["set_id"])
     xAxTime = selections["xAxTime"]
 
@@ -625,27 +629,29 @@ def chart3D():
     # Select observations between two datetimes
     filteredData = filteredData[filteredData['timestamp'].between('{}.00'.format(selections["timeSEList"][0]), '{}.00'.format(selections["timeSEList"][1]))]
 
-    dataLen = len (filteredData)
+    dataLen = len(filteredData)
     if dataLen == 0:
-        print("Filtered Dataset is empty!")
-        resp = jsonify(success=True)
-        return resp
-    elif (selections["X"] == []) or (selections["Y"] == []) or (selections["Z"] == []):
-        print("One or more Parameters are not selected!")
-        resp = jsonify(success=True)
-        return resp
+        return jsonify({'error': 'Selected data set is empty. Try readjusting the filters...'})
+    elif (selections["X"] == []) or (selections["Y"] == []) or (selections["Z"] == []) or ('set__-____-__data' in selections["X"]) or ('set__-____-__data' in selections["Y"]) or ('set__-____-__data' in selections["Z"]):
+        return jsonify({'error': 'At least one parameter is not selected. Make sure, that all 3 axes have a value in the table.'})
 
     curr_project = current_user.get_id()
     setting = Settings.query.filter_by(project_id=curr_project).first()
     theme = "light" if setting.color_theme == "light" else "dark"
 
+    legendNames = []
+    for sel in range(len(selections["X"])):
+        nameID = selections["X"][sel].split("__-__")[0]
+        log = Log.query.filter_by(id=nameID).first()
+        legendNames.append(log.title)
+
     plotly = Plotly()
     if selections["action"] == "Chart":
-        plotly.draw3D(filteredData, selections["X"], selections["Y"], selections["Z"], selections["Color"], theme)
+        htmlFile = plotly.draw3D(filteredData, selections["X"], selections["Y"], selections["Z"], selections["Color"], theme, legendNames)
     elif selections["action"] == "Sim":
-        plotly.X2drawWithSliderReducedSteps(filteredData, selections["X"], selections["Y"], selections["Z"], selections["tail"], theme)
+        htmlFile = plotly.X2drawWithSliderReducedSteps(filteredData, selections["X"], selections["Y"], selections["Z"], selections["tail"], theme)
 
-    resp = jsonify(success=True)
+    resp = jsonify({'success':htmlFile, 'error': 'false'})
     return resp
 
 import fnmatch
@@ -765,3 +771,77 @@ def readAndMergeData(log_id_list, def_topics, syncOnGPS):
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+from io import BytesIO
+from datetime import datetime
+@app.route('/analyserXBackup')
+def analyserXBackup():
+    print("exporting files...")
+    dbPath = os.path.join(app.root_path, "site.db")
+    userDataPath = os.path.join(app.root_path,"static", "user_data")
+    shutil.copy2(dbPath,userDataPath)
+    time.sleep(0.5)
+
+    #zipf = shutil.make_archive("exp", "tar", userDataPath, app.root_path)
+    # create a ZipFile object
+    memory_file = BytesIO()
+    with zipfile.ZipFile(memory_file, 'w') as zipf:
+        for root, dirs, files in os.walk(userDataPath):
+            for file in files:
+                zipPath = os.path.relpath(root, userDataPath)
+                zipf.write(os.path.join(root,file), os.path.join(zipPath, file))
+    memory_file.seek(0)
+
+    dbNewPath = os.path.join(userDataPath, "site.db")
+    if os.path.exists(dbNewPath):
+        os.remove(dbNewPath)
+    else:
+        print("The site.db in user_data not found...")
+
+    print("export completed")
+
+    dt_string = datetime.now().strftime("%d/%m/%Y_%H:%M:%S")
+
+    return send_file(memory_file, attachment_filename = f"AnalyserX_Backup_{dt_string}.zip", as_attachment = True)
+
+def allowed_file(filename):
+    ALLOWED_EXTENSIONS = set(['zip'])
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+import zipfile
+@app.route('/importData', methods=["GET","POST"])
+def importData():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            print("No file part in request")
+            return render_template("import.html")
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            print("No file selected...")
+            flash("No file selected...", "warning")
+            return render_template("import.html")
+        if file and allowed_file(file.filename):
+            print("Importing data...")
+            zip_path = os.path.join(app.root_path, "import.zip")
+            file.save(zip_path)
+            zip_ref = zipfile.ZipFile(zip_path, 'r')
+            temp_dir = os.path.join(app.root_path, "static", "temp")
+            os.mkdir(temp_dir)
+            zip_ref.extractall(temp_dir)
+            zip_ref.close()
+
+            shutil.move(os.path.join(temp_dir,"site.db"),os.path.join(app.root_path, "site.db"))
+            user_d_path = os.path.join(app.root_path, "static", "user_data")
+            remPath = os.path.join(app.root_path, "static", "oldData")
+            os.rename(user_d_path, remPath)
+            os.rename(temp_dir, user_d_path)
+            shutil.rmtree(remPath)
+            os.remove(zip_path)
+            print("Data import completed")
+            flash("Data import completed", "success")
+            return redirect(url_for('home'))
+
+    return render_template("import.html")
