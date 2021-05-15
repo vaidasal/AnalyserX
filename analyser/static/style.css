@@ -1,5 +1,13 @@
 p { text-align: center }
 
+textarea {
+    font-size: 1em !important;
+}
+
+input[type=text] {
+    text-align: center;
+}
+
 h2 {
   color: #FFFFFF;
 }
