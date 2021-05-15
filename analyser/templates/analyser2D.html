@@ -149,32 +149,34 @@
                   </ul>
             </div>
           </div>
-
-
-
-
-
-
           </div>
 
-        {% if gpsAvail > 0 %}
-          {% if gpsAvail == 1 %}
-          <div class="container">
-            <input type='checkbox' id="xAxTime" checked>&nbsp;&nbsp;
-            <label style="color: #0275d8;">Use GPS Time for X Axis</label>
+          <div class="row">
+            <div class="col-6">
+              {% if gpsAvail > 0 %}
+                {% if gpsAvail == 1 %}
+                <div class="container">
+                  <input type='checkbox' id="xAxTime" checked>&nbsp;&nbsp;
+                  <label style="color: #0275d8;">Use GPS Time for X Axis</label>
+                </div>
+                {% else %}
+                <div class="container">
+                  <input type='checkbox' id="xAxTime">&nbsp;&nbsp;
+                  <label style="color: #0275d8;">Use GPS Time for X Axis</label>
+                </div>
+                {% endif %}
+              {% else %}
+                <div class="container" hidden>
+                  <input type='checkbox' id="xAxTime">&nbsp;&nbsp;
+                  <label style="color: #0275d8;">Use GPS Time for X Axis</label>
+                </div>
+              {% endif %}
+            </div>
+            <div class="col-6 d-flex align-items-end justify-content-end mb-2">
+              <p style="text-align:right; color:grey; font-size:10pt; vertical-align:bottom; margin-bottom:0">If plot is not showing make sure, that pop-ups are allowed</p>
+            </div>
           </div>
-          {% else %}
-          <div class="container">
-            <input type='checkbox' id="xAxTime">&nbsp;&nbsp;
-            <label style="color: #0275d8;">Use GPS Time for X Axis</label>
-          </div>
-          {% endif %}
-        {% else %}
-          <div class="container" hidden>
-            <input type='checkbox' id="xAxTime">&nbsp;&nbsp;
-            <label style="color: #0275d8;">Use GPS Time for X Axis</label>
-          </div>
-        {% endif %}
+
         <button class="btn btn-outline-success btn-block" type="button" name="button" id="sendData" style="border-color: #0275d8; color: white;">Create</button>
       </div>
 
