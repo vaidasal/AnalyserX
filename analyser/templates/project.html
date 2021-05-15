@@ -3,14 +3,15 @@
 {% block body_block %}
 
 <nav class="navbar navbar-dark" style="background-color: #272727;">
-  <span class="navbar-brand mb-0 h1" style="color: #FFFFFF">ANALYSER</span>
+  <a href="{{ url_for('logout') }}"><span class="navbar-brand mb-0 h1"style="color: #FFFFFF">ANALYSER X</span></a>
+
 
   <div class="btn-group">
     <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" id="navProjButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     {{ current_user.title }}
     </button>
     <div class="dropdown-menu dropdown-menu-right">
-      <a class="dropdown-item" type="button" href="{{ url_for('project') }}">Details</a>
+      <a class="dropdown-item" type="button" href="{{ url_for('project') }}">Current Project</a>
       <a class="dropdown-item" type="button" href="{{ url_for('settings') }}">Settings</a>
       <a class="dropdown-item" type="button" href="{{ url_for('logout') }}">Switch Project</a>
     </div>
@@ -53,7 +54,7 @@
   {% block project_block %}
 
     <nav>
-      <div class="container">
+      <div class="mx-3">
           <span class="navbar-brand mb-0 h1" style="color: white">{{ current_user.title }}</span>
           <div class="btn-group btn-group-sm float-right" role="group" aria-label="Basic example">
             <button type="button" class="btn btn-outline-primary btn-sm projectUpdate" id="updateProjectButton"
@@ -85,7 +86,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="editProjectModal" tabindex="-1" role="dialog" aria-labelledby="addSessionModal" aria-hidden="true">
-<div class="modal-dialog">
+<div class="modal-dialog  modal-xl modal-dialog-centered">
   <div class="modal-content border-0">
     <div class="modal-header text-center">
       <h4 class="modal-title w-100" id="myModalLabel"></h4>
@@ -101,7 +102,7 @@
         </div>
         <div class="form-group">
           <label for="resultsOfTask" class="text-muted">Notes</label>
-          <textarea class="form-control" name="projDetail" id="projDetail" rows="7"></textarea>
+          <textarea class="form-control" name="projDetail" id="projDetail" rows="12"></textarea>
         </div>
         <div class="form-group">
           <label for="resultsOfTask" class="text-muted">Company</label>
@@ -121,10 +122,10 @@
 </div>
 
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="addSessionModal" aria-hidden="true">
-<div class="modal-dialog">
+<div class="modal-dialog modal-dialog-centered">
   <div class="modal-content border-0">
     <div class="modal-header">
-      <h4 class="modal-title" id="modalDeleteLabel"></h4>
+      <h4 class="col-12 modal-title text-center" id="modalDeleteLabel"></h4>
     </div>
     <div class="modal-body">
       <!-- FORM -->
