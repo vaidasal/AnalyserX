@@ -15,8 +15,8 @@
 
 
 <nav>
-  <div class="container">
-      <span class="navbar-brand mb-0 h1" style="color: white">{{ sel_session.title }}</span>
+  <div class="mx-3">
+      <span class="navbar-brand mb-0 h1" style="color: white;">{{ sel_session.title }}</span>
       <div class="btn-group btn-group-sm float-right" role="group" aria-label="Button group with nested dropdown">
 
         <div class="btn-group" role="group">
@@ -124,7 +124,7 @@
         {% for log in logs %}
 
           <div class="btn-group btn-block">
-            <a href="{{ url_for('analyser2D', type='log', id=log.id)}}" id="logButtonInSession" type="button" class="btn btn-outline-primary btn-block" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="left" data-content="{{ log.notes }}" title="ID: {{ log.id }}   Filename: {{ log.file_name }}">
+            <a href="{{ url_for('analyser2D', type='log', id=log.id)}}" target="_blank" id="logButtonInSession" type="button" class="btn btn-outline-primary btn-block" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="left" data-content="{{ log.notes }}" title="ID: {{ log.id }}   Filename: {{ log.file_name }}">
               {{ log.title }}
             </a>
             <button type="button" id="logDropButton" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -144,7 +144,7 @@
 
       {% for set in sets %}
         <div class="btn-group btn-block">
-          <a href="{{ url_for('analyser2D', type='set', id=set.id)}}" id="setButtonInSession" type="button" class="btn btn-outline-light btn-block" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="left" data-content="{{ set.notes }}" title="SetID: {{ set.id }}   LogIDs: {{ set.log }}">
+          <a href="{{ url_for('analyser2D', type='set', id=set.id)}}" target="_blank" id="setButtonInSession" type="button" class="btn btn-outline-light btn-block" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="left" data-content="{{ set.notes }}" title="SetID: {{ set.id }}   LogIDs: {{ set.log }}">
             {{ set.title }}
           </a>
           <button type="button" id="setDropButton" class="btn btn-outline-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -169,10 +169,10 @@
 
 <!-- Modal -->
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="addSessionModal" aria-hidden="true">
-<div class="modal-dialog">
+<div class="modal-dialog modal-xl modal-dialog-centered">
   <div class="modal-content border-0">
     <div class="modal-header">
-      <h4 class="modal-title" id="myModalLabel"></h4>
+      <h4 class="col-12 modal-title text-center" id="myModalLabel"></h4>
     </div>
     <div class="modal-body">
       <!-- FORM -->
@@ -185,7 +185,7 @@
         </div>
         <div class="form-group">
           <label for="resultsOfTask" class="text-muted">Notes</label>
-          <textarea class="form-control" name="detail" id="detail" rows="7"></textarea>
+          <textarea class="form-control" name="detail" id="detail" rows="12"></textarea>
         </div>
         <div class="form-group">
           <button class="btn btn-outline-success btn-block" type="submit">Update</button>
@@ -197,10 +197,10 @@
 </div>
 
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="addSessionModal" aria-hidden="true">
-<div class="modal-dialog">
+<div class="modal-dialog modal-dialog-centered">
   <div class="modal-content border-0">
     <div class="modal-header">
-      <h4 class="modal-title" id="modalDeleteLabel"></h4>
+      <h4 class="col-12 modal-title text-center" id="modalDeleteLabel"></h4>
     </div>
     <div class="modal-body">
       <!-- FORM -->
