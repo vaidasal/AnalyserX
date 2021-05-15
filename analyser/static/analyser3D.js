@@ -239,8 +239,16 @@ $("#simulate3DData").click(function() {
   data: JSON.stringify(selectedData),
   dataType: 'json',
   url: '/chart3D',
-  success: function () {
+  success: function (data) {
       $('#loadingChartModal').modal('hide');
+      if (data['error'] == 'false') {
+        var newWindow = window.open();
+        newWindow.document.write(data['success']);
+      } else {
+        console.log("error was there")
+        $('#errorModalText').text(data['error']);
+        $('#errorModal').modal('show');
+      }
   }});
 
 })
@@ -340,8 +348,16 @@ $("#send3DData").click(function() {
   data: JSON.stringify(selectedData),
   dataType: 'json',
   url: '/chart3D',
-  success: function () {
+  success: function (data) {
       $('#loadingChartModal').modal('hide');
+      if (data['error'] == 'false') {
+        var newWindow = window.open();
+        newWindow.document.write(data['success']);
+      } else {
+        console.log("error was there")
+        $('#errorModalText').text(data['error']);
+        $('#errorModal').modal('show');
+      }
   }});
 
 })
@@ -367,13 +383,12 @@ $('#analyserSettings').click(function() {
       $("#topicsSettTable tbody").empty();
 
       var keys = Object.keys(topix)
-      console.log(keys)
       $.each(keys, function(index, value) {
         var ch = "";
         if (topix[value]) {
           ch = "checked"
         }
-        $('#topicsSettTable tbody').append("<tr><td>" + value + "</td><td class='float-right'>" + "<input type='checkbox'" + ch + "></td></tr>");
+        $('#topicsSettTable tbody').append("<tr><td>" + value + "</td><td style='float: right !important; padding-right: 14px !important;'>" + "<input type='checkbox'" + ch + "></td></tr>");
       })
 
       $('.analyserSettings').show();
@@ -394,18 +409,17 @@ $('#analyserSettings').click(function() {
     dataType: 'json',
     url: '/loadtopics',
     success: function (topics) {
-      var topix = JSON.stringify(topics).replace(/'/g, '"');
+      var topix = JSON.stringify(topics["success"]).replace(/'/g, '"');
       topix = JSON.parse(topix)
       $("#topicsSettTable tbody").empty();
 
       var keys = Object.keys(topix)
-      console.log(keys)
       $.each(keys, function(index, value) {
         var ch = "";
         if (topix[value]) {
           ch = "checked"
         }
-        $('#topicsSettTable tbody').append("<tr><td>" + value + "</td><td class='float-right'>" + "<input type='checkbox'" + ch + "></td></tr>");
+        $('#topicsSettTable tbody').append("<tr><td>" + value + "</td><td style='float: right !important; padding-right: 14px !important;'>" + "<input type='checkbox'" + ch + "></td></tr>");
       })
 
       $('.analyserSettings').show();
