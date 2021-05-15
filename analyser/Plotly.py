@@ -5,15 +5,11 @@ Created on Sun Jul 12 17:59:49 2020
 @author: Vaidas Alaune
 """
 
-# import cufflinks as cf
 from plotly.offline import plot
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 import numpy as np
 import math
-import pandas as pd
-
-import plotly.express as px
 import plotly.io as pio
 
 class Plotly:
@@ -53,7 +49,7 @@ class Plotly:
                     yData = dataSet[lSel]
 
                 nameList = lSel.split("__-__")
-                fig.add_trace(go.Scatter(x=timeStamp, y=yData,
+                fig.add_trace(go.Scatter(mode='lines', x=timeStamp, y=yData,
                                          name=str(nameList[0] + "_" + nameList[1])), secondary_y=False)
 
         for rSel in rightSelected:
@@ -66,7 +62,7 @@ class Plotly:
                     yData = dataSet[rSel]
 
                 nameList = rSel.split("__-__")
-                fig.add_trace(go.Scatter(x=timeStamp, y=yData,
+                fig.add_trace(go.Scatter(mode='lines', x=timeStamp, y=yData,
                                          name=str(nameList[0] + "_" + nameList[1])), secondary_y=True)
 
         if axRange[0]:
@@ -81,34 +77,26 @@ class Plotly:
 
         if theme == "dark":
             fig.layout.template = 'plotly_dark'
-        fig.update_layout(xaxis=dict(rangeslider=dict(visible=True), type="date"), showlegend=True)
+        fig.update_layout(xaxis=dict(rangeslider=dict(visible=True), type="date"), showlegend=True, legend=dict(orientation = 'h'))
 
-        # Define Name
-        fileName = 'plot2D.html'
-        # if len(rightSelected) >= 1:
-        #    fileName = '{}_{}_2D.html'.format(leftSelected[0],rightSelected[0])
-        # else:
-        #    fileName = '{}_2D.html'.format(leftSelected[0])
+        return pio.to_html(fig)
 
-        plot(fig, auto_open=True)
-
-    def draw3D(self, dataSet, x, y, z, c, theme):
+    def draw3D(self, dataSet, x, y, z, c, theme, legend):
 
         print('creating 3D plot...')
 
         tracks = []
         for i in range(len(x)):
-
             if c[i] != '':
                 tracks.append(go.Scatter3d(x=dataSet[x[i]], y=dataSet[y[i]],
-                                           z=dataSet[z[i]], line_color=dataSet[c[i]],
+                                           z=dataSet[z[i]], name=legend[i], line_color=dataSet[c[i]],
                                            text=["Time: {}".format(x) for x in dataSet['timestamp']],
                                            marker=dict(size=1, color=dataSet[c[i]],
                                                        colorbar=dict(y=0.1, len=0.8), colorscale="Viridis")))
 
             else:
                 tracks.append(go.Scatter3d(x=dataSet[x[i]], y=dataSet[y[i]],
-                                           z=dataSet[z[i]], text=["Time: {}".format(x) for x in dataSet['timestamp']],
+                                           z=dataSet[z[i]], name=legend[i], text=["Time: {}".format(x) for x in dataSet['timestamp']],
                                            marker=dict(size=1)))
 
         fig = go.Figure(data=tracks)
@@ -117,7 +105,8 @@ class Plotly:
             fig.layout.template = 'plotly_dark'
         fig.update_scenes(zaxis_autorange="reversed")
         fig.update_layout(scene_aspectmode='data')
-        plot(fig, auto_open=True)
+
+        return pio.to_html(fig)
 
 
 
@@ -229,4 +218,5 @@ class Plotly:
         print('red: 1 dataSet')
         print('plotting...')
 
-        plot(fig, auto_open=True)
+        #plot(fig, auto_open=True)
+        return pio.to_html(fig)
