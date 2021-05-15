@@ -3,14 +3,14 @@
 {% block body_block %}
 
 <nav class="navbar navbar-dark" id="navBarLogNr" data-type="{{ type }}" data-id="{{ id }}" style="background-color: #272727;">
-  <span class="navbar-brand mb-0 h1" style="color: #FFFFFF">ANALYSER</span>
+  <a href="{{ url_for('logout') }}"><span class="navbar-brand mb-0 h1"style="color: #FFFFFF">ANALYSER X</span></a>
 
   <div class="btn-group">
     <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" id="navProjButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     {{ current_user.title }}
     </button>
     <div class="dropdown-menu dropdown-menu-right">
-      <a class="dropdown-item" type="button" href="{{ url_for('project') }}">Details</a>
+      <a class="dropdown-item" type="button" href="{{ url_for('project') }}">Current Project</a>
       <a class="dropdown-item" type="button" href="{{ url_for('session', session_id=session) }}">Current Session</a>
       <a class="dropdown-item" type="button" href="{{ url_for('settings') }}">Settings</a>
       <a class="dropdown-item" type="button" href="{{ url_for('logout') }}">Switch Project</a>
@@ -32,7 +32,7 @@
   <div class="col-4" style="padding-left:0;">
     <div class="container">
       <div class="card mt-3">
-        <div class="card-header text-white" style="background-color: #272727;">Filters
+        <div class="card-header text-primary" style="background-color: #272727;">Filters
         </div>
         <div class="card-body text-white" style="background-color: #363636;">
 
@@ -254,7 +254,7 @@
 
 
 
-<div class="modal fade" id="loadingChartModal" tabindex="-1" role="dialog" aria-labelledby="addSessionModal" aria-hidden="true">
+<div class="modal" id="loadingChartModal" tabindex="-1" role="dialog" aria-labelledby="addSessionModal" aria-hidden="true">
 <div class="modal-dialog modal-dialog-centered">
   <div class="modal-content border-0">
     <div class="modal-header">
