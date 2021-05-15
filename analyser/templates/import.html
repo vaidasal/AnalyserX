@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block body_block %}
+
+
+<div class="d-flex vh-100">
+  <div class="d-flex w-100 justify-content-center align-self-center">
+
+      <div class="card" style="width: 50rem;">
+        <h5 class="card-header text-white text-center pt-4" style="background-color: #272727;">
+          <strong>Restore user data</strong>
+        </h5>
+        <div class="card-body px-lg-5 pt-0">
+
+<!-- FORM -->
+<form method="post" action="" class="text-center" enctype=multipart/form-data>
+  <fieldset class="form-group text-white">
+    <div class="form-group">
+        <div class="container mt-3 pt-2 pb-2">
+          <h6>Select AnalyserXBackup zip file:</h6>
+        </div>
+        <div class="input-group">
+          <div class="custom-file">
+            <input type=file name=file class="custom-file-input", id="inputGroupFile02">
+            <label class="custom-file-label" for="inputGroupFile01" id="selectedImport">Choose file</label>
+          </div>
+        </div>
+    </div>
+  </fieldset>
+
+  <button type="button" class="btn btn-block btn-outline-danger loading" data-toggle="modal" data-target="#importAndDelete">Restore</button>
+
+  <div class="modal fade" id="importAndDelete" tabindex="-1" role="dialog" aria-labelledby="importDelete" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0">
+      <div class="modal-header">
+        <h4 class="col-12 modal-title text-center" id="modalImportLabel">Are you sure?</h4>
+      </div>
+      <div class="modal-body">
+        <!-- FORM -->
+        <h6 style="color:red;">Currently saved log data will be deleted. It will be replaced with the data from recovery zip file.</h6>
+        <div class="row mt-3">
+          <div class="col-6">
+            <button type="button" class="btn btn-dark btn-block" data-dismiss="modal">Cancel</button>
+          </div>
+          <div class="col-6">
+            <input type=submit id="restoreDataSubmit" value=Restore class="btn btn-block btn-outline-danger loading">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</form>
+
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal fade" id="loadingImportModal" tabindex="-1" role="dialog" aria-labelledby="importModal" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content border-0">
+    <div class="modal-header">
+      <h4 class="col-12 modal-title text-center" id="loadingLabel">
+        Please wait...
+      </h4>
+    </div>
+    <div class="modal-body">
+      <p class="text-white">Dataset is being imported... Depending on your data size it might take several minutes to complete. Do not leave or refresh this page!</p>
+      <div class="d-flex justify-content-center align-items-center">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+          <span class="sr-only"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+{% endblock %}
