@@ -67,10 +67,19 @@ class DataReader:
         end = time[-1][:-3]
         return [start, end]
 
-    def readDataNames(self, setNum, dirName, number, namesArray):
+    def readDataNames(self, setNum, dirName, number, namesArray, isGps):
         namesDict = {}
         timeStamp = ['00:00:00', '00:00:00']
         timeUtc = ['00:00:00', '00:00:00']
+
+        if isGps != 0:
+            filename = dirName + '/' + number + '_' + 'vehicle_gps_position_0' + '.csv'
+            try:
+                data = pd.read_csv(filename)
+                if "time_utc_usec" in data.columns:
+                    timeUtc = self.getStartEndTime(pd.to_datetime(data["time_utc_usec"], unit='us').dt.round('ms'), False)
+            except:
+                print('couldnt find: {}'.format(filename))
 
         t = True
         for x in range(len(namesArray)):
@@ -300,18 +309,24 @@ class DataReader:
                 cond = np.full(len(data), True)
             return cond
 
+        def is_number(s):
+            """ Returns True if string is a number. """
+            try:
+                float(s)
+                return True
+            except ValueError:
+                return False
+
         def filterMinMaxConditions(key, value, data):
             if key not in data.keys().tolist():
                 return np.full(len(data), True)
 
-            if value[0].isnumeric():
-                print("min is Numeric")
-                if value[1].isnumeric():
-                    print("max is numeric")
+            if is_number(value[0]):
+                if is_number(value[1]):
                     cond = (data[key] > float(value[0])) & (data[key] < float(value[1]))
                 else:
                     cond = data[key] > float(value[0])
-            elif value[1].isnumeric():
+            elif is_number(value[1]):
                 cond = data[key] < float(value[1])
             else:
                 cond = np.full(len(data), True)
@@ -324,6 +339,7 @@ class DataReader:
                 con.append(filterMinMaxConditions(keyName, chSett[fil]["Value"], allDataSet))
             else:
                 con.append(filter10Conditions(keyName, chSett[fil]["Value"], allDataSet))
+
 
         filteredData = allDataSet.loc[con[0] & con[1] & con[2] & con[3] & con[4] & con[5]]
         print('data filtered')    
