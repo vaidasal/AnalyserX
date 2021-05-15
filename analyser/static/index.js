@@ -5,6 +5,7 @@ $(document).on('click', '.pdfDropdown', function (e) {
 });
 
 
+
 $(".taskUpdate").click(function () {
     var ids = $(this).attr('data-id');
     var res = $(this).attr('data-result');
@@ -149,6 +150,17 @@ $('#inputGroupFile01').change(function() {
   var names = $.map(selectedFiles, function(val) { return val.name; });
   names = names.toString();
   $('#selectedFile').text(names)
+})
+
+$('#inputGroupFile02').change(function() {
+  var selectedFiles = $('#inputGroupFile02').prop("files")
+  var names = $.map(selectedFiles, function(val) { return val.name; });
+  names = names.toString();
+  $('#selectedImport').text(names)
+})
+
+$('#restoreDataSubmit').click(function() {
+  $('#loadingImportModal').modal('show');
 })
 
 $('#lightThemeCheck').change(function() {
@@ -520,17 +532,14 @@ $("#sendData").click(function() {
   $('#loadingChartModal').modal('show');
 
   var set_id = {"type":$("#navBarLogNr").attr("data-type"), "id":$("#navBarLogNr").attr("data-id")};
-  console.log(set_id)
   tableRight = [];
   $('#tableRight tbody tr').each(function() {
     tr = [];
     $(this).children('td').each(function() {
       tr.push($(this).text());
-    })
-    console.log(tr);
+    });
     name = tr[0] + "__-__" + tr[2] + "__-__" + tr[1];
-    console.log(name)
-    tableRight.push(name)
+    tableRight.push(name);
   })
 
   tableLeft = [];
@@ -538,11 +547,9 @@ $("#sendData").click(function() {
     tr = [];
     $(this).children('td').each(function() {
       tr.push($(this).text());
-    })
-    console.log(tr);
+    });
     name = tr[0] + "__-__" + tr[2] + "__-__" + tr[1];
-    console.log(name)
-    tableLeft.push(name)
+    tableLeft.push(name);
   })
 
   var xAxTime = $("#xAxTime").is(":checked");
@@ -560,6 +567,7 @@ $("#sendData").click(function() {
       }
     }
   }
+
   filterDict["fil5"] = {"Topic":[topicFilter5,setFilter5],"Parameter":$('#inputParameterSelectfil5 option:selected').text(),"Value": [$("#min5").val(),$("#max5").val()]}
   filterDict["fil6"] = {"Topic":[topicFilter6,setFilter6],"Parameter":$('#inputParameterSelectfil6 option:selected').text(),"Value": [$("#min6").val(),$("#max6").val()]}
 
@@ -567,8 +575,6 @@ $("#sendData").click(function() {
   rgRight = [$("#rangeFromRight").val(),$('#rangeToRight').val()]
 
   var selectedData = {"left": tableLeft, "right": tableRight, "set_id":set_id, "filters": filterDict, "axisRange": {"left":rgLeft,"right":rgRight}, "xAxTime": xAxTime}
-  console.log("Send!")
-  console.log(selectedData)
 
 
   $.ajax({
@@ -577,52 +583,65 @@ $("#sendData").click(function() {
   data: JSON.stringify(selectedData),
   dataType: 'json',
   url: '/postmethod',
-  success: function () {
+  success: function (data) {
       $('#loadingChartModal').modal('hide');
-  }});
+      if (data['error'] == 'false') {
+        var newWindow = window.open();
+        newWindow.document.write(data['success']);
+      } else {
+        $('#errorModalText').text(data['error']);
+        $('#errorModal').modal('show');
+      }
+  }
+  });
 
 })
 
 
 var arr;
 $('#commitSetButton').click(function(){
-    $('#loadingBasic').modal('show');
     arr = $('#LogsForSetTable').find('[type="checkbox"]:checked').map(function(){
           return $(this).closest('tr').find('th:nth-child(1)').text();
     }).get();
 
     setDict = {"logs": arr};
+
+    $('#loadingBasic').modal('show');
+
     $.ajax({
     type: 'POST',
     contentType: 'application/json',
     data: JSON.stringify(setDict),
     dataType: 'json',
     url: '/loadtopics',
-    success: function (topics) {
-      var topix = JSON.stringify(topics).replace(/'/g, '"');
-      topix = JSON.parse(topix)
-      $("#topicsOfSettTable tbody").empty();
+    success: function (data) {
+        if (data['error'] == 'false') {
+          var topix = JSON.stringify(data['success']).replace(/'/g, '"');
+          topix = JSON.parse(topix)
+          $("#topicsOfSettTable tbody").empty();
 
-      gpsForSync = topix.hasOwnProperty("vehicle_gps_position_0")
-      console.log(gpsForSync)
-      if (gpsForSync) {
-        $("#syncTimeGPSCont").attr("hidden", false);
-        $("#syncTimeGPScheck").prop("checked", true);
-      }
+          gpsForSync = topix.hasOwnProperty("vehicle_gps_position_0")
+          if (gpsForSync) {
+            $("#syncTimeGPSCont").attr("hidden", false);
+            $("#syncTimeGPScheck").prop("checked", true);
+          }
 
-      var keys = Object.keys(topix)
-      console.log(keys)
-      $.each(keys, function(index, value) {
-        var ch = "";
-        if (topix[value]) {
-          ch = "checked"
+          var keys = Object.keys(topix)
+          $.each(keys, function(index, value) {
+            var ch = "";
+            if (topix[value]) {
+              ch = "checked"
+            }
+            $('#topicsOfSettTable tbody').append("<tr><td>" + value + "</td><td class='float-right' style='padding-right: 20px !important;'>" + "<input type='checkbox'" + ch + "></td></tr>");
+          })
+          $('#createSetButton').prop('disabled', false);
+          $('#createSetButton').css({"border-color": "#5cb85c", "color": "white"});
+          $('#loadingBasic').modal('hide');
+        } else {
+          $('#loadingBasic').modal('hide');
+          $('#errorModalText').text(data['error']);
+          $('#errorModal').modal('show');
         }
-        $('#topicsOfSettTable tbody').append("<tr><td>" + value + "</td><td class='float-right'>" + "<input type='checkbox'" + ch + "></td></tr>");
-      })
-      $('#createSetButton').prop('disabled', false);
-      $('#createSetButton').css({"border-color": "#5cb85c", "color": "white"});
-
-      $('#loadingBasic').modal('hide');
     }});
 });
 
