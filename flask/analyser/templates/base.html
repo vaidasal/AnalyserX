@@ -21,6 +21,8 @@
         <div class="alert alert-{{ category }} m-3">
           <span>{{ message }}</span>
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
       {% endfor %}
      {% endif %}

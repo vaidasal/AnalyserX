@@ -3,17 +3,6 @@
 {% block project_block %}
 
 
-{% with messages = get_flashed_messages(with_categories=true) %}
- {% if messages %}
-  {% for category, message in messages %}
-    <div class="alert alert-{{ category }}">
-      {{ message }}
-    </div>
-  {% endfor %}
- {% endif %}
-{% endwith %}
-
-
 <nav>
   <div class="mx-3">
       <span class="navbar-brand mb-0 h1" style="color: white;">{{ sel_session.title }}</span>
