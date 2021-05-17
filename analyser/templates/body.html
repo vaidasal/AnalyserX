@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+{% extends "project.html" %}
+{% block project_block %}
+
+
+<nav>
+  <div class="mx-3">
+      <span class="navbar-brand mb-0 h1" style="color: white;">{{ sel_session.title }}</span>
+      <div class="btn-group btn-group-sm float-right" role="group" aria-label="Button group with nested dropdown">
+
+        <div class="btn-group" role="group">
+          <button id="btnGroupDrop1" type="button" class="btn btn-outline-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-file-pdf-o"></i></button>
+          <div class="dropdown-menu dropdown-menu-right pdfDropdown" aria-labelledby="btnGroupDrop1" style="width: 250px;" id="pdfDropdownButton">
+            <div class="container">
+              <h5>Export PDF</h5>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="container"><input type="checkbox" class="mr-3" id="notesCheckPDF" data-ses_id="{{ sel_session.id }}"> Notes</div>
+            <div class="container"><input type="checkbox" class="mr-3" id="tasksCheckPDF"> Tasks</div>
+            <div class="container"><input type="checkbox" class="mr-3" id="logsCheckPDF"> Logs</div>
+            <div class="dropdown-divider"></div>
+            <div class="container">
+              <button type="button" class="btn btn-outline-primary btn-block" id="exportPDF">Export</button>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-outline-primary btn-sm sessionUpdate" id="updateSessionButton" data-title="{{ sel_session.title }}" data-id="{{ sel_session.id }}" data-result="{{ sel_session.notes }}"><i class="fa fa-pencil"></i></button>
+        <button type="button" class="btn btn-outline-primary btn-sm delete" id="deleteSessionButton"
+            data-type="Session" data-title="{{ sel_session.title }}" data-id="{{ sel_session.id }}"><i class="fa fa-times"></i></button>
+      </div>
+    </div>
+</nav>
+<hr style='margin-top: 0' />
+
+
+<div class="row no-gutter">
+  <div class="col-9">
+
+<div class="container">
+  <p class="lead text-left text-white">{{ sel_session.notes }}</p>
+</div>
+
+<!-- TASKS -->
+<div class="container">
+  <h5 style="color: white">Tasks</h5>
+  <hr style='margin-top: 0' />
+</div>
+
+<div class="container">
+  {% for task in tasks %}
+  <div class="card" style="background-color: transparent!important;">
+  <div class="card-header text-white" style="background-color: transparent; padding: 4px;"><i class="fa fa-dot-circle-o px-1" style="color: #0275d8;"></i><b>
+    {{task.title}}</b>
+  </div>
+  <div class="card-body" id="taskCardBody">
+    <div class="row">
+      <div class="col-10">
+        <p class="card-text text-left pl-3">{{task.result}}</p>
+      </div>
+      <div class="col-2">
+        <div class="btn-group float-right mx-3">
+          <button type="button" class="btn btn-sm btn-outline-light float-right taskUpdate"
+              data-title="{{ task.title }}" data-id="{{ task.id }}" data-result="{{ task.result }}"><i class="fa fa-pencil"></i></button>
+          <button type="button" class="btn btn-sm btn-outline-light float-right delete"
+              data-title="{{ task.title }}" data-id="{{ task.id }}" data-type="Task"><i class="fa fa-times"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  {% endfor %}
+</div>
+
+<form action="" method="post">
+  <div class="container">
+    <div class="input-group my-3">
+      <input type="text" name="task" placeholder="new task" class="form-control border-secondary" placeholder="Task" aria-label="Recipient's username" aria-describedby="basic-addon2" style="background-color: #272727;">
+      <div class="input-group-append">
+        <button class="btn btn-outline-primary" type="submit" style="background-color: #272727;"><i class="fa fa-plus"></i></button>
+      </div>
+    </div>
+  </div>
+</form>
+
+
+
+<!-- LOGS -->
+  </div>
+  <div class="col-3">
+    <div class="container">
+      <div class="card">
+      <div class="card-header" style="background-color: #272727;">
+        <div class="container">
+          <div class="row">
+            <div class="col-6"><b>
+              LOGS</b>
+            </div>
+            <div class="col-6">
+              <div class="dropleft float-right">
+                <button type="button" id="dropdownMenuLog" class="btn btn-outline-light btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-plus"></i></button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLog">
+                  <a href="{{ url_for('new_log', session=sel_session.id)}}" class="dropdown-item">Add Log</a>
+                  <a href="{{ url_for('new_set', session=sel_session.id)}}" class="dropdown-item" style="color: #0275d8">Add Set</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="card-body" style="background-color: #363636;">
+        {% for log in logs %}
+
+          <div class="btn-group btn-block">
+            <a href="{{ url_for('analyser2D', type='log', id=log.id)}}" target="_blank" id="logButtonInSession" type="button" class="btn btn-outline-primary btn-block" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="left" data-content="{{ log.notes }}" title="ID: {{ log.id }}   Filename: {{ log.file_name }}">
+              {{ log.title }}
+            </a>
+            <button type="button" id="logDropButton" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <div class="dropdown-menu text-center" style="background-color: #FFFFFF;">
+              <button type="button" class="btn logUpdate"
+                  data-title="{{ log.title }}" data-id="{{ log.id }}" data-note="{{ log.notes }}"><i class="fa fa-pencil"></i></button>
+              <button type="button" class="btn delete"
+                  data-title="{{ log.title }}" data-id="{{ log.id }}" data-type="Log"><i class="fa fa-times"></i></button>
+              <button type="button" class="btn refresh"
+                  data-title="{{ log.title }}" data-id="{{ log.id }}" data-type="Log"><i class="fa fa-refresh"></i></button>
+            </div>
+          </div>
+
+      {% endfor %}
+
+      {% for set in sets %}
+        <div class="btn-group btn-block">
+          <a href="{{ url_for('analyser2D', type='set', id=set.id)}}" target="_blank" id="setButtonInSession" type="button" class="btn btn-outline-light btn-block" data-trigger="hover" data-container="body" data-toggle="popover" data-placement="left" data-content="{{ set.notes }}" title="SetID: {{ set.id }}   LogIDs: {{ set.log }}">
+            {{ set.title }}
+          </a>
+          <button type="button" id="setDropButton" class="btn btn-outline-light dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <div class="dropdown-menu text-center" style="background-color: #FFFFFF;">
+            <button type="button" class="btn setUpdate"
+                data-title="{{ set.title }}" data-id="{{ set.id }}" data-note="{{ set.notes }}"><i class="fa fa-pencil"></i></button>
+            <button type="button" class="btn delete"
+                data-title="{{ set.title }}" data-id="{{ set.id }}" data-type="Set"><i class="fa fa-times"></i></button>
+            <button type="button" class="btn refresh"
+                data-title="{{ set.title }}" data-id="{{ set.id }}" data-type="Set"><i class="fa fa-refresh"></i></button>
+          </div>
+        </div>
+    {% endfor %}
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="addSessionModal" aria-hidden="true">
+<div class="modal-dialog modal-xl modal-dialog-centered">
+  <div class="modal-content border-0">
+    <div class="modal-header">
+      <h4 class="col-12 modal-title text-center" id="myModalLabel"></h4>
+    </div>
+    <div class="modal-body">
+      <!-- FORM -->
+      <form action="{{ url_for('update', session=sel_session.id)}}" method="post" class="text-center">
+        <div class="form-group text-white">
+          <label for="task" class="text-muted">Name</label>
+          <input type="text" name="title" id="title" value="" class="form-control" aria-label="Recipient's username" aria-describedby="basic-addon2">
+          <input type="hidden" class="form-control" name="ids" id="ids" value="">
+          <input type="hidden" class="form-control" name="typeToUpdate" id="typeToUpdate" value="">
+        </div>
+        <div class="form-group">
+          <label for="resultsOfTask" class="text-muted">Notes</label>
+          <textarea class="form-control" name="detail" id="detail" rows="12"></textarea>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-outline-success btn-block" type="submit">Update</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="addSessionModal" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content border-0">
+    <div class="modal-header">
+      <h4 class="col-12 modal-title text-center" id="modalDeleteLabel"></h4>
+    </div>
+    <div class="modal-body">
+      <!-- FORM -->
+      <div class="container">
+        <form action="{{ url_for('delete', session=sel_session.id)}}" method="post" class="text-center">
+          <div class="form-group text-white">
+            <label for="task" name="task" id="deleteLabel" ></label>
+            <input type="hidden" class="form-control" name="idd" id="idd" value="">
+            <input type="hidden" class="form-control" name="typeToDelete" id="typeToDelete" value="">
+          </div>
+          <div class="form-group">
+            <div class="row">
+              <div class="col-6 px-2">
+                <button type="button" class="btn btn-dark btn-block" data-dismiss="modal">Cancel</button>
+              </div>
+              <div class="col-6 px-2">
+                <button class="btn btn-outline-danger btn-block" type="submit">Delete</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="modal fade" id="refreshModal" tabindex="-1" role="dialog" aria-labelledby="addSessionModal" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered">
+  <div class="modal-content border-0">
+    <div class="modal-header">
+      <h4 class="modal-title float-center" id="loadingLabel">
+        Please wait...
+      </h4>
+    </div>
+    <div class="modal-body">
+      <p class="text-white">plugins are being calculated...</p>
+      <div class="d-flex justify-content-center align-items-center">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+          <span class="sr-only"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+{% endblock %}
