@@ -13,25 +13,10 @@ Analyser runs as a local server application. Its based on Flask. This means it i
 to start run: python run.py
 then open http://0.0.0.0:5000/ in your browser.
 
-AnalyserX requires following Modules:
-Flask==1.1.2
-Flask-Login==0.5.0
-Flask-SQLAlchemy==2.4.4
-Flask-WTF==0.14.3
-fpdf==1.7.2
-geopy==2.0.0
-Jinja2==2.11.2
-numpy==1.19.4
-pandas==1.1.5
-plotly==4.14.3
-pyulog==0.8.0
-SQLAlchemy==1.3.20
-squaternion==0.3.2
-attrs==21.1.0
-WTForms==2.3.3
+Required Modules are listed in requirements.txt file.
 
 # Docker
-Alternatively you can use AnalyserX over Docker. To create a container run in terminal "docker-compose up". After that you will be able to start analyser by simply pressing play button in docker dashboard.
+Alternatively you can use AnalyserX over Docker. To create a container run "docker-compose up". After that you will be able to start analyser by simply pressing play button in docker dashboard. AnalyserX will be then accessible using 127.0.0.1 in your browser.
 
 <img width="1345" alt="Screenshot 2021-03-05 at 13 34 56" src="https://user-images.githubusercontent.com/51539520/110128922-9c596400-7dc7-11eb-9166-b60ed4173c92.png">
 
@@ -80,7 +65,7 @@ It is possible to create a test session report in PDF. You can select, which inf
 It is possible to move AnalyserX to different locations on your file system. Links for files and data are relative.
 
 # Backup
-You can make Backup files and then later import them back if needed. Its especially usefull when working with docker, because without backup deleting container would result in complete data loss.
+You can make Backup files and then later import them back if needed. Its especially usefull when working with docker, because deleting container without backup would result in complete data loss.
 
 # Disclaimer
 It is still an early version of AnalyserX. It is not well tested so it might include bugs and other inefficiencies. Many of the functions are expecting certain parameter names. Default names should work with data set made by Pixhawk devices. I am open to improvements and suggestions.
@@ -88,10 +73,3 @@ It is still an early version of AnalyserX. It is not well tested so it might inc
 # Thank you
 In order to write this program I used a lot of help from different sources.
 Big Thank You for Stack Overflow community for all your questions and answers and Corey Shafer for his Flask YouTube tutorial. I'm very thankful for everyone, who contributed to plotly, pyulog and other libraries, that i'm using in this project.
-
-
-
-
-
-
-
