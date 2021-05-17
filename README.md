@@ -12,6 +12,7 @@ Analyser runs as a local server application. Its based on Flask. This means it i
 # Starting
 to start run: python run.py
 then open 0.0.0.0:5000 in your browser.
+AnalyserX was developed on Chrome and Firefox, therefore it's strongly advised to use one of these browsers.
 
 Required Modules are listed in requirements.txt file.
 
