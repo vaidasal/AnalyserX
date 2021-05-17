@@ -790,8 +790,6 @@ def analyserXBackup():
     shutil.copy2(dbPath,userDataPath)
     time.sleep(0.5)
 
-    #zipf = shutil.make_archive("exp", "tar", userDataPath, app.root_path)
-    # create a ZipFile object
     memory_file = BytesIO()
     with zipfile.ZipFile(memory_file, 'w') as zipf:
         for root, dirs, files in os.walk(userDataPath):
@@ -844,8 +842,8 @@ def importData():
             shutil.move(os.path.join(temp_dir,"site.db"),os.path.join(app.root_path, "site.db"))
             user_d_path = os.path.join(app.root_path, "static", "user_data")
             remPath = os.path.join(app.root_path, "static", "oldData")
-            os.rename(user_d_path, remPath)
-            os.rename(temp_dir, user_d_path)
+            shutil.move(user_d_path, remPath)
+            shutil.move(temp_dir, user_d_path)
             shutil.rmtree(remPath)
             os.remove(zip_path)
             print("Data import completed")
