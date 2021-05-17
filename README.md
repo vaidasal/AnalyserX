@@ -11,7 +11,7 @@ Analyser runs as a local server application. Its based on Flask. This means it i
 
 # Starting
 to start run: python run.py
-then open http://0.0.0.0:5000/ in your browser.
+then open 0.0.0.0:5000 in your browser.
 
 Required Modules are listed in requirements.txt file.
 
