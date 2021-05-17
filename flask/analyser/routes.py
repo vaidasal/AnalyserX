@@ -182,6 +182,9 @@ def new_log(session):
             setting = Settings.query.filter_by(project_id=curr_project).first()
 
             for file in form.log_file.data:
+                if file.filename == "":
+                    return redirect(url_for('session', session_id=session))
+
                 (log_path, file_name) = save_file(file)
 
                 enteredTitle = str(form.title.data)
