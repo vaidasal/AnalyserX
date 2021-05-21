@@ -231,6 +231,9 @@ class Plugins:
                 calcList.append(calc)
                 print("Accelerometer added")
 
+        if calcList == []:
+            return None
+
         data = sorted(calcList, key=len, reverse=True)
         mData = data[0]
 
